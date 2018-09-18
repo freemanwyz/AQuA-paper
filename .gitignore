@@ -1,0 +1,14 @@
+tmp/
+doc/
+
+*.zip
+*.tiff
+*.tif
+*.html
+*.avi
+*.log
+*.asv
+*.h5
+.tags
+tags
+.vscode/
