@@ -1,4 +1,4 @@
-function [datSim,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
+function [datSimNew,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
     
     valMin = p.valMin;
     dOut(dOut<valMin) = 0;
@@ -23,7 +23,7 @@ function [datSim,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
     if p.ignoreFilterTemp==0
         fprintf('Temporal filtering\n')
         datAct3 = imfilter(datAct2,p.filter3D);  % mimic calcium dynamics
-        datAct3(datAct3<valMin) = 0;   % avoid too weak signals     
+        %datAct3(datAct3<valMin) = 0;   % avoid too weak signals     
         xNew = datAct3>0 & datAct2==0;
         eOut(xNew) = -1;
         %eOut(datAct3<valMin) = 0;  % avoid too weak signals        
@@ -34,6 +34,7 @@ function [datSim,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
     % downsample the movie and event map
     datSim = datAct3(:,:,1:p.xRate:end);  
     evtSim = eOut(:,:,1:p.xRate:end);
+    evtLstCore = label2idx(evtSim);
     
     % extend event map
     evtSimExt = evtSim;
@@ -65,9 +66,37 @@ function [datSim,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
             end
         end
     end
-        
-    evtLstCore = label2idx(evtSim);
-    evtLst = label2idx(evtSimExt);    
+    
+    % clean signals lower than 20% of peak
+    evtLst = label2idx(evtSimExt);
+    if p.ignoreFilterTemp==0
+        evtMapNew = zeros(size(evtSimExt),'int32');
+        datSimNew = zeros(size(datSim),'single');        
+        for ii=1:numel(evtLst)
+            evt0 = evtLst{ii};
+            if isempty(evt0)
+                continue
+            end
+            [ih,iw,it] = ind2sub([H,W,T],evt0);
+            rgh = min(ih):max(ih);
+            rgw = min(iw):max(iw);
+            rgt = min(it):max(it);
+            evtMap0 = evtSimExt(rgh,rgw,rgt);
+            evtMap0(evtMap0>0 & evtMap0~=ii) = 0;
+            dat0 = datSim(rgh,rgw,rgt);
+            dat0(evtMap0==0) = 0;
+            dat0Max = max(dat0,[],3);  % peak value
+            dat0Dif = dat0 - dat0Max*0.25;  % find those < 25% peak
+            dat0(dat0Dif<0) = 0;
+            evtMap0(dat0==0) = 0;
+            evtMapNew(rgh,rgw,rgt) = max(evtMapNew(rgh,rgw,rgt),evtMap0);
+            datSimNew(rgh,rgw,rgt) = max(datSimNew(rgh,rgw,rgt),dat0);
+        end
+    else
+        evtMapNew = evtSimExt;
+        datSimNew = datSim;
+    end
+    evtLst = label2idx(evtMapNew);
     
 end
 

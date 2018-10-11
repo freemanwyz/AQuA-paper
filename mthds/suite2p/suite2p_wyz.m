@@ -13,13 +13,15 @@ function res = suite2p_wyz(dat,db)
     db.date = 'xx';
     db.expts = [];  % leave empty, or specify subolders as numbers
     %db.diameter = diameter;  % do specify the "diameter" of an average cell
-    db.RootStorage = [tempdir,'suite2p',filesep];  % specify full path to tiffs here
+    sessId = randi(1e8);
+    db.RootStorage = [tempdir,'suite2p',num2str(sessId),filesep];  % specify full path to tiffs here
     if ~exist(db.RootStorage,'dir')
         mkdir(db.RootStorage);
     end    
     db.expred = [];
     
-    folderPrj = tempdir;
+    folderPrj = [db.RootStorage,filesep,'prj'];
+    mkdir(folderPrj);
     
     % write TIFF file
     fTmp = [db.RootStorage,db.mouse_name,filesep,db.date,filesep];
@@ -59,8 +61,8 @@ function res = suite2p_wyz(dat,db)
     % ---- cell detection options ------------------------------------------%
     ops0.ShowCellMap            = 1; % during optimization, show a figure of the clusters
     ops0.sig                    = 0.5;  % spatial smoothing length in pixels; encourages localized clusters
-    ops0.nSVDforROI             = 1000; % how many SVD components for cell clustering
-    ops0.NavgFramesSVD          = 5000; % how many (binned) timepoints to do the SVD based on
+    ops0.nSVDforROI             = 1000; % how many SVD components for cell clustering, 1000
+    ops0.NavgFramesSVD          = 5000; % how many (binned) timepoints to do the SVD based on, 5000
     ops0.signalExtraction       = 'surround'; % how to extract ROI and neuropil signals:
     %  'raw' (no cell overlaps), 'regression' (allows cell overlaps),
     %  'surround' (no cell overlaps, surround neuropil model)
@@ -102,6 +104,11 @@ function res = suite2p_wyz(dat,db)
     % output
     % --------------
     res = save4Suite2p(ops0,db);
+    
+    try
+        rmdir(db.RootStorage,'s');
+    catch
+    end
     
 end
 

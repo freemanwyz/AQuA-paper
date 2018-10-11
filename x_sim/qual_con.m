@@ -1,6 +1,6 @@
 % quality control of detection results
 
-f0 = 'ex_domain_avgsize_fixed_noprop_nosmo_samedf_20180912_222204';
+f0 = 'ex_domain_avgsize_oneseed_fixed_nospasmo_noprop_samedf_201809241238';
 pIn = 'D:\OneDrive\projects\glia_kira\se_aqua\simDat\';
 pOut = 'D:\OneDrive\projects\glia_kira\se_aqua\sim\';
 tb = readtable('resLst.csv','Delimiter',',');
@@ -53,8 +53,20 @@ for ii=1:size(tb,1)
 end
 
 
+%% debug
+evt = r0.evt;
+tx1 = zeros(numel(evt),1);
+for ii=1:numel(evt)
+    [~,~,it0] = ind2sub(size(datSim),evt{ii});
+    tx1(ii) = max(it0)-min(it0);
+end
 
-
+evt = xx.evtLst;
+tx0 = zeros(numel(evt),1);
+for ii=1:numel(evt)
+    [~,~,it0] = ind2sub(size(datSim),evt{ii});
+    tx0(ii) = max(it0)-min(it0);
+end
 
 
 

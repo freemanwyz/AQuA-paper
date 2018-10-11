@@ -22,7 +22,7 @@ function [regMap,delayMap,pixLst] = growSeed(seedIdx,initTime,sucRt,regMask,p)
         nNow = sum(regMap(:)>0);
         if nNow/p.nPix>=0.5
             cc = bwconncomp(regMap>0,4);
-            if cc.NumObjects==1 && nNow/p.nPix>=0.8
+            if cc.NumObjects==1 && nNow/p.nPix>=0.9
                 break
             else
                 sucRt = sucRt*1;  % 1.05 or 1.1 for more natural growth

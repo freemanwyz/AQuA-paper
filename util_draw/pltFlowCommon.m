@@ -156,7 +156,7 @@ function ff = pltFlowCommon(datSel,p,xType)
         %cc = bwboundaries(pixMap);
         %imgx = cat(3,p.pixMap*0,p.pixMap*0.5,p.pixMap);
         alphaMap = ones(H0,W0)*0.5;        
-        addSliceRGB(imgx,-size(datSel,3)-4,axRaw,alphaMap);
+        addSliceRGB(imgx,-size(datSel,3)-5,axRaw,alphaMap);
         
         for kk=1:numel(p.bdLst)
             bd0 = p.bdLst{kk};

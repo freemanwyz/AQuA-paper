@@ -1,24 +1,38 @@
 function p=simParamEx(p)
     % Simulation data generation parameters for ex vivo data
+    % Generate data at a higher sampling rate, then downsample for smooth
+    % looking propagation
+    %
 
-    p.nSe = numel(p.se);  % desired number of super events
-    p.seDensity = p.nSe/p.sz(3);  % average number of new se per frame (after down-sampling)
-    p.evtArea = 500;  % number of pixel each evnet in an SE need. For small SE, only one event
+    % domain: generate data based on domains
+    % event: event based
+    % roi_dbg: simplest ROI
+    p.mthd = 'domain';
+    
+    % common
+    p.nSe = 500;  % desired number of super events
+    p.seDensity = 2;  % average number of new se per frame (after down-sampling)
+    p.noProp = 0;  % avoid propagation
     p.dsRate = 5;  % data sampling rate
-    p.xRate = p.dsRate;  % down-sample rate
-    p.minPropSz = 200;  % minimum size to allow propagation
+    p.xRate = p.dsRate;  % down-sample rate after simulation
+    p.unifBri = 2;  % 2: same brightness for all pixels
     p.valMin = 0.05;  % minimum intensity to show
     
     % domain related
-    p.useDomain = 0;  % generate data based on domains
     p.fixed = 0;  % same propagation pattern in each event in a domain
-    p.domainType = 'random';  % domain size distribution
-    p.nDomain = 100;  % domain numbers. Larger ones generated first
-    p.noProp = 0;  % avoid propagation
-    p.unifBri = 0;  % same brightness for all pixels
+    p.domainType = 'large';  % domain size distribution: large, average, random
+    p.nDomain = 30;  % domain numbers. Larger ones generated first
+    p.gapxy = 5;  % make domain far away enough spatially
+    p.useSpk = 0;  % add sparklings
+    p.sparklingSz = [9,25];  % sparkling size range
+    p.sparklingDensity = 2;  % average number of sparklings per frame
+    p.minArea = 64;
     
-    % seed location and propagation (events)
-    p.seedMinDist = 30;  % minimum distance between seeds in one super event
+    % separation, seed location and propagation (events)
+    p.minPropSz = 500;  % minimum size to allow propagation
+    p.evtArea = 500;  % number of pixel each evnet in an SE need. For small SE, only one event
+    p.seedMinDist = 100;  % minimum distance between seeds in one super event
+    
     p.cRise = 2;  % temporal distance between seeds after downsample
     p.cRiseMin = p.dsRate*p.cRise;  % temporal distance between seeds before downsample
     p.seedRtAdd = 0.5;  % minimum success rate
@@ -32,7 +46,7 @@ function p=simParamEx(p)
     p.filter3D = sim1.getDecayFilter(p.tfUp,p.tfDn);  % filter in time direction
     p.ignoreFilterSpa = 0;
     p.ignoreFilterTemp = 0;
-    p.smoXY = 0.5;
+    p.smoXY = 1;
     
 end
     

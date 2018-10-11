@@ -5,11 +5,12 @@ function res0 = geci_pipe(datSimNy,thrSz)
     %
     % The only key parameter is the size in pixels, specified by thrSz
     % Auto thresholding works well in practice, we will add manual choice later
+    % We keep using 'default black', which seems more robust
     %
     % Note: need to rename ImageJ executable to 'fiji' and add to path
     % Frame number must be divisible by 10, as we groups every 10
     %
-    % DO NOT open file in macro; specify it in system call, otherwise we will
+    % DO NOT open data in macro; specify it in system call, otherwise we will
     % face problems when setting parameters in 'run' calls
     %
     % TODO: 
@@ -20,12 +21,13 @@ function res0 = geci_pipe(datSimNy,thrSz)
     %
     
     % make temporary folder and write movie
-    f2 = [tempdir,'geci',filesep];
+    sessId = randi(1e8);
+    f2 = [tempdir,'geci',num2str(sessId),filesep];
     if ~exist(f2,'dir')
         mkdir(f2)
     end
     
-    io.writeTiffSeq([f2,'sim.tif'],datSimNy);
+    writeTiffSeq([f2,'sim.tif'],datSimNy);
     
     % pre-process
     % output is deBg.tif
@@ -38,13 +40,15 @@ function res0 = geci_pipe(datSimNy,thrSz)
     p0 = [f2,'deBg.tif'];
     m0 = [pwd,'/mthds/geciquant/domain.ijm',' ',f2,',',num2str(thrSz)];
     system(['fiji',' ',p0,' ','-macro',' ',m0]);
-    unzip([f2,'soma.zip'],[f2,'soma']);
-    
-    % segmentation for soma
-    % output is soma_seg.zip for each soma
-    p0 = [f2,'deBg.tif'];
-    m0 = [pwd,'/mthds/geciquant/seg.ijm',' ',f2];
-    system(['fiji',' ',p0,' ','-macro',' ',m0]);
+    if exist([f2,'soma.zip'],'file')
+        unzip([f2,'soma.zip'],[f2,'soma']);
+        
+        % segmentation for soma
+        % output is soma_seg.zip for each soma
+        p0 = [f2,'deBg.tif'];
+        m0 = [pwd,'/mthds/geciquant/seg.ijm',' ',f2];
+        system(['fiji',' ',p0,' ','-macro',' ',m0]);
+    end
     
     % gather ROIs
     % in this simulation, first ROI in each zip file is the boundary
@@ -94,6 +98,11 @@ function res0 = geci_pipe(datSimNy,thrSz)
     res0.bdLst = bdLst;
     res0.roiLst = roiLst;
     res0.evtMap = evtMap;
+    
+    try
+        rmdir(f2,'s');
+    catch
+    end
         
 end
 

@@ -1,5 +1,9 @@
 %% compare Matlab and Java implementation
 % use simple simulation
+if ~exist('HTregionGrowingSuper','class')
+    javaclasspath('-v1')
+    javaclasspath('..\..\repo\gfptoolbox\tools\FASP\out\production\FASP\')
+end
 
 tmp = load('normTopMeanDist'); 
 osTb = tmp.tbTopNorm;
@@ -60,10 +64,10 @@ figure;imagesc(zMap);colorbar
 %% compare
 tic; res0 = HTregionGrowingSuper(zMap,vMap,2,4,4,0); toc
 htMap00 = double(res0.connDmIDmap);
-zzshow(regionMapWithData(htMap00),'java');
+% zzshow(regionMapWithData(htMap00),'java');
 
 tic; [htMap00a,~,~] = htrg2(zMap,[],vMap,osTb,2,4,4,8); toc
-zzshow(regionMapWithData(htMap00a),'matlab');
+% zzshow(regionMapWithData(htMap00a),'matlab');
 
 
 

@@ -1,6 +1,6 @@
 mthd,thr,res
-AQuA,10,res_aqua_
-GECI-quant,5,res_geci_
+AQuA,0,res_aqua_
+GECI-quant,0,res_geci_
 CaSCaDe,0,res_cascade_
-CaImAn,5,res_calman_
-Suite2P,5,res_suite2p_
+CaImAn,0,res_calman_
+Suite2P,0,res_suite2p_

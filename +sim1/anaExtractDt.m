@@ -3,13 +3,6 @@ function [evtDtLst,evtDtPixLst] = anaExtractDt(rDt,mthdX,thrxx,sz)
     
     nNoise = numel(rDt);
     
-    % choose one SVM model from cascade
-    % 1: no SVM. 2: 60% area. 3: any volume. 4: 50% volume
-    if strcmp(mthdX,'CaSCaDe')
-        rDt = rDt(:,3);
-        nNoise = size(rDt,1);
-    end
-    
     % filter detected events by z score
     evtDtLst = cell(nNoise,1);
     evtDtPixLst = cell(nNoise,1);
@@ -34,7 +27,7 @@ function [evtDtLst,evtDtPixLst] = anaExtractDt(rDt,mthdX,thrxx,sz)
             evtDtPix{jj} = ihw;
         end
         evtDtPixLst{ii} = evtDtPix;
-    end
-    
+    end   
     
 end
+

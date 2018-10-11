@@ -1,21 +1,22 @@
-function res = calman_top(dat,xType)
+function res = calman_top(dat,tsub,options,K,patches,tau,p,dlSave,showMe)
     % Top level Calman, modified by Yizhi
     % TODO: specify input presets
     
     % complete pipeline for calcium imaging data pre-processing
-    dlSave = './mthds/calman/';  % save CNN model
-    fCalmAn = '../../repo/CalmAn/';
-    addpath(fCalmAn)
-    addpath(genpath([fCalmAn,'utilities']));
-    addpath(genpath([fCalmAn,'deconvolution']));
+    %dlSave = './mthds/calman/';  % save CNN model
+    %fCalmAn = '../../repo/CalmAn/';
+    %addpath(fCalmAn)
+    %addpath(genpath([fCalmAn,'utilities']));
+    %addpath(genpath([fCalmAn,'deconvolution']));
     
-    foldername = [tempdir,'calman',filesep];
+    sessId = randi(1e8);
+    foldername = [tempdir,'calman',num2str(sessId),filesep];
     if ~exist(foldername,'dir')
         mkdir(foldername);
     end
 
     fileIn = {[foldername,'tmpDat.tif']};
-    io.writeTiffSeq(fileIn{1},dat,16);
+    writeTiffSeq(fileIn{1},dat,16);
     
     numFiles = numel(fileIn);
     FOV = size(read_file(fileIn{1},1,1));
@@ -29,8 +30,6 @@ function res = calman_top(dat,xType)
     convert_file(fullname,'h5',regFile);
     registered_files = {regFile};
     
-    fr = 1;                                         % frame rate
-    tsub = 1;  % degree of downsampling (for 30Hz imaging rate you can try also larger, e.g. 8-10)
     ds_filename = [foldername,'/ds_data.mat'];
     data_type = class(read_file(registered_files{1},1,1));
     data = matfile(ds_filename,'Writable',true);
@@ -75,15 +74,16 @@ function res = calman_top(dat,xType)
     % now run CNMF on patches on the downsampled file, set parameters first
     % ---------------------------------------------------------------------
     
-    sizY = data.sizY;  % of data matrix
-    switch xType
-        case 'invivo'
-            [options,K,patches,tau,p] = setInVivo(sizY,fr,tsub);
-        case 'exvivo'
-            [options,K,patches,tau,p] = setExVivo(sizY,fr,tsub);
-    end
+    %sizY = data.sizY;  % of data matrix
+
+    %     switch xType
+    %         case 'invivo'
+    %             [options,K,patches,tau,p] = setInVivo(sizY,fr,tsub);
+    %         case 'exvivo'
+    %             [options,K,patches,tau,p] = setExVivo(sizY,fr,tsub);
+    %     end
     
-    % Run on patches (the main work is size done here)
+    % Run on patches (the main work is done here)
     [A,b,C,f,~,P,~,YrA] = run_CNMF_patches(data.Y,K,patches,tau,0,options);
     
     % we are operating on downsampled data
@@ -113,15 +113,17 @@ function res = calman_top(dat,xType)
     throw = ~keep;
     Coor_k = [];
     Coor_t = [];
-    try
-        figure;
-        ax1 = subplot(121); plot_contours(A(:,keep),Cn,options,0,[],Coor_k,[],1,find(keep));
-        title('Selected components','fontweight','bold','fontsize',14);
-        ax2 = subplot(122); plot_contours(A(:,throw),Cn,options,0,[],Coor_t,[],1,find(throw));
-        title('Rejected components','fontweight','bold','fontsize',14);
-        linkaxes([ax1,ax2],'xy')
-    catch
-        keyboard
+    if showMe>0
+        try
+            figure;
+            ax1 = subplot(121); plot_contours(A(:,keep),Cn,options,0,[],Coor_k,[],1,find(keep));
+            title('Selected components','fontweight','bold','fontsize',14);
+            ax2 = subplot(122); plot_contours(A(:,throw),Cn,options,0,[],Coor_t,[],1,find(throw));
+            title('Rejected components','fontweight','bold','fontsize',14);
+            linkaxes([ax1,ax2],'xy')
+        catch
+            keyboard
+        end
     end
     
     % keep only the active components
@@ -188,11 +190,15 @@ function res = calman_top(dat,xType)
         g{i} = opts_oasis.pars(:)';
         disp(['Performing deconvolution. Trace ',num2str(i),' out of ',num2str(N),' finished processing.'])
     end
-    
-    
+        
     % output
     % ---------------------------------------------------------------------
     res = save4CalmAn(A_keep,Cn,F_dff,F0,C_dec,S_dec,options);
+    
+    try
+        rmdir(foldername,'s');
+    catch
+    end
     
 end
 

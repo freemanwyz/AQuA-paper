@@ -1,6 +1,8 @@
 function res = aqua_top(datOrg,opts)
     %global dbg
     
+    res = [];
+    
     % -- preset 1: in vivo. 2: ex vivo. 3: GluSnFR
     [datOrg,opts] = burst.prep1a(datOrg,opts);
     
@@ -12,9 +14,13 @@ function res = aqua_top(datOrg,opts)
     [svLst,~,riseX] = burst.spTop(dat,dF,lmLoc,[],opts);  % super voxel detection
     %ov1 = plt.regionMapWithData(svLst,datOrg,0.5); zzshow(ov1);
     
-    [riseLst,datR,evtLst,seLst] = burst.evtTop(dat,dF,svLst,riseX,opts);  % events
+    [riseLst,datR,evtLst,seLst] = burst.evtTop(datOrg,dF,svLst,riseX,opts);  % events
     %ov1 = plt.regionMapWithData(seLst,datOrg,0.5,datR); zzshow(ov1);
     %ov1 = plt.regionMapWithData(evtLst,datOrg,0.5,datR); zzshow(ov1);
+    
+    if isempty(evtLst)
+        return
+    end
     
     [ftsLst,dffMat] = fea.getFeatureQuick(datOrg,evtLst,opts);
     
@@ -31,7 +37,7 @@ function res = aqua_top(datOrg,opts)
     %ov1 = plt.regionMapWithData(evtLstMerge,datOrg,0.5,datR); zzshow(ov1);
     
     % reconstruction (glutamate)
-    if opts.extendSV==0 || opts.ignoreMerge==0 || opts.extendEvtRe>0
+    if opts.ignoreMerge==0 || opts.extendEvtRe>0  % opts.extendSV==0
         [riseLstE,datRE,evtLstE] = burst.evtTopEx(dat,dF,evtLstMerge,opts);
     else
         riseLstE = riseLstFilterZ; datRE = datR; evtLstE = evtLstFilterZ;
@@ -40,9 +46,8 @@ function res = aqua_top(datOrg,opts)
     
     % feature extraction
     [ftsLstE,dffMatE,dMatE] = fea.getFeaturesTop(datOrg,evtLstE,opts);
-    ftsLstE = fea.getFeaturesPropTop(dat,datRE,evtLstE,ftsLstE,opts);
+    %ftsLstE = fea.getFeaturesPropTop(dat,datRE,evtLstE,ftsLstE,opts);
     
-    res = [];
     res.opts = opts;
     res.se = seLst;
     res.evtAll = evtLst;

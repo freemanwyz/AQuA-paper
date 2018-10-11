@@ -37,8 +37,8 @@ function gt = anaGt(rIn,thrMin)
     %snrGt = 20*log10(sigGt./noiseStd);
     %snrGt1 = 20*log10(sigGt1./noiseStd);        
 
-    % sigMean = mean(datSim(datSim>0));
-    sigMean = mean(sigGt1);  % this gives higher signal intensity
+    sigMean = mean(datSim(datSim>0));
+    %sigMean = mean(sigGt1);  % this gives higher signal intensity
     snrMov = 20*log10(sigMean./noiseStd);
     
     gt = [];

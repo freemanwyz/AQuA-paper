@@ -65,8 +65,8 @@ function spatiotemporal_SubROI() {
         roiManager("select", 0);        // Select the somatic ROI (or S-ROI)
         getStatistics(soma_area, soma_mean);    // Get the area covered by S-ROI
 
-        //setAutoThreshold("Default dark");   // Threshold the substack
-        setAutoThreshold("Li dark stack");   // Threshold the substack
+        setAutoThreshold("Default dark");   // Threshold the substack
+        //setAutoThreshold("Li dark stack");   // Threshold the substack
         
         run("Analyze Particles...", "size=min_area-soma_area circularity=0.00-1.00 show=Outlines display add stack");
         roi_count = roiManager("count");

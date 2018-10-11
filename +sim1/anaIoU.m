@@ -1,6 +1,6 @@
 function [iou,gtLst,dtLst] = anaIoU(rDt,gt,thrxx,mthdX)
     % anaIoU calculates Jaccard scores
-    % iou is noise levels by 4: gt-pix, gt-vox, dt-pix, dt-vox
+    % iou: noise levels by 4: gt-pix, gt-vox, dt-pix, dt-vox
     % gt: ground truth, dt: detected, pix: pixel overlap, vox: voxel overlap
     
     nNoise = numel(gt.noise);

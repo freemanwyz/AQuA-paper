@@ -1,8 +1,8 @@
 function [domainMap,domainSeIdx] = genDomains(p)
     % generate domains for simulation
     
+    % collect valid regions
     nSeEx = numel(p.se);
-
     seLen = zeros(nSeEx,1);
     for ii=1:nSeEx
         x0 = p.sePix{ii};
@@ -17,6 +17,7 @@ function [domainMap,domainSeIdx] = genDomains(p)
             seLenIx = find(seLen>30);
     end
     
+    % build domain map
     domainMap = zeros(p.sz(1),p.sz(2));
     domainMapDi = zeros(p.sz(1),p.sz(2));
     seUsed = zeros(nSeEx,1);
@@ -27,17 +28,24 @@ function [domainMap,domainSeIdx] = genDomains(p)
         
         % get one domain
         suc = 0;
-        for ii = 1:nSeEx
+        for ii = 1:numel(seLenIx)
             idx = seLenIx(ii);
             if seUsed(idx)>0
                 continue
             end
+            if seLen(idx)<p.minArea
+                break
+            end
             
             regMap = p.sePix{idx};
+            if isempty(regMap)
+                break
+            end
+            
             rgh1 = p.seRg(idx,1):p.seRg(idx,2);
             rgw1 = p.seRg(idx,3):p.seRg(idx,4);
-            rgh2 = max(min(rgh1)-5,1):min(max(rgh1)+5,p.sz(1));
-            rgw2 = max(min(rgw1)-5,1):min(max(rgw1)+5,p.sz(2));
+            rgh2 = max(min(rgh1)-p.gapxy,1):min(max(rgh1)+p.gapxy,p.sz(1));
+            rgw2 = max(min(rgw1)-p.gapxy,1):min(max(rgw1)+p.gapxy,p.sz(2));
             regMap1 = zeros(numel(rgh2),numel(rgw2));
             regMap1(rgh1-min(rgh2)+1,rgw1-min(rgw2)+1) = regMap>0;
             %regMap1 = imfill(regMap1,'holes');

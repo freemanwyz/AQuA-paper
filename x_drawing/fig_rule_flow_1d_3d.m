@@ -1,7 +1,7 @@
 %% figure 1b flow chart 3D
 
 % data
-startup
+folderTop = 'D:\OneDrive\projects\glia_kira\se_aqua\';
 folderAnno = [folderTop,'x_paper\labels\'];
 fDat = 'FilteredNRMCCyto16m_slice2_TTX3_L2 3-012cycle1channel1';
 
@@ -38,15 +38,17 @@ p.colEvt = [0 0 1;1 0 0;1 0.5 0];
 p.curveCol = 'curve'; % curve: one curve, one color, from colxPixReg. peak: peak color from colEvt
 
 
+%% raw data
+ff_raw = pltFlowRaw(datSel);
+export_fig(ff_raw,'fig_raw.png','-r800','-transparent');
+
+
 %% single event
 p0a = p;
 msk0a = msk==1;
 p0a.mskSel = msk.*(msk0a);
-% x0a = [14,15,38]; y0a = [77,67,18];
 x0a = [38 28 16 13 18]; y0a = [19 42 58 77 94];
 [p0a.bdLst,p0a.actFrame] = getRegInfo(x0a,y0a,msk0a);
-% p0a.pixMap = sum(msk==1,3)>0;
-% p0a.colxPixReg(:,1) = p0a.colxPixReg(:,1);
 ff0a = pltFlowCommon(datSel,p0a,'single_evt');
 ff0a_c = showCurves(x0a,y0a,dat,p0a.colxPixReg);
 
@@ -94,24 +96,6 @@ ff1a = pltFlowCommon(datSel,p1a,'peaks');
 p1a0 = p1a;
 p1a0.actFrame = p1a0.actFrame*0;
 ff1a0 = pltFlowCommon(datSel,p1a0,'peaks');
-
-% ff1a_s = figure;
-% axRaw = axes(ff1a_s);
-% [H0,W0,T0] = size(datSel);
-% 
-% for ii=1:T0
-%     % raw data and events
-%     img0 = datSel(:,:,ii);
-%     msk0 = msk(:,:,ii);
-%     imgx = img0;
-%     alphaMap = (msk0>0)*0.5+0.05;
-%     addSliceRGB(imgx,-ii,axRaw,alphaMap);
-% end
-% 
-% pbaspect([W0 H0 W0*4])
-% axRaw.CameraUpVector = [0 1 0];
-% campos([1158 596 52]);
-% axis off
 
 
 %% 2D map of super voxels
@@ -168,6 +152,15 @@ msk0a = 1*(msk==1);
 p3.mskSel = msk0a;
 p3.pixMap = sum(msk==1,3)>0;
 ff2 = pltFlowCommon(datSel,p3,'single_evt');
+pbaspect([57 179 400])
+
+% ff2_fp = pltFootprint(datSel,p3);
+% pbaspect([57 179 1])
+% campos([75,100,50])
+% p3.pixMap = [];
+% ff2_oneevt = pltFlowCommon(datSel,p3,'single_evt');
+
+x0a = [38 28 16 13 18]; y0a = [19 42 58 77 94];
 ff2_c = showCurves(x0a,y0a,dat,p3.colxPixReg);
 
 
@@ -190,6 +183,8 @@ export_fig(ff1e,'fig1b_b_se.png','-r800','-transparent');
 export_fig(ff1f,'fig1b_b_evt.png','-r800','-transparent');
 
 export_fig(ff2,'fig1c_evt.png','-r800','-transparent');
+% export_fig(ff2_fp,'fig1c_footprint.png','-r800','-transparent');
+% export_fig(ff2_oneevt,'fig1c_oneevt.png','-r800','-transparent');
 print(ff2_c,'feature_evt_c.svg','-dsvg','-r800');
 
 export_fig(ff_flow_sv_2d,'ff_flow_sv_2d.png','-r800','-transparent');

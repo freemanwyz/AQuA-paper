@@ -1,30 +1,27 @@
 % analyze the simulation results
+sess0 = 'exvivo_20181010';
 
-f0 = 'ex_domain_avgsize_fixed_noprop_nosmo_samedf_20180912_222204';
+% f0 = 'ex-roi_area-avg-min-100_smo-st_201810091742';
+% f0 = 'ex-roi_area-big-min-100_prop-min-500-gap-100_smo-st_201810091747';
+% f0 = 'ex-evt_area-big-min-100_smo-st_201810091744';
+f0 = 'ex-evt_area-big-min-100_prop-min-500-gap-100_smo-st_201810091749';
+
 pIn = 'D:\OneDrive\projects\glia_kira\se_aqua\simDat\';
-pOut = 'D:\OneDrive\projects\glia_kira\se_aqua\sim\';
+pOutx = 'D:\OneDrive\projects\glia_kira\se_aqua\sim\';
 tb = readtable('./x_sim/resLst.csv','Delimiter',',');
 
 % get files
+pOut = [pOutx,filesep,sess0,filesep];
 f00 = dir([pOut,'res_*']);
+namex = {'aqua','geci','cascade','calman','suite2p'};
 for ii=1:numel(f00)
     if isempty(strfind(f00(ii).name,f0))
         continue
     end
-    if ~isempty(strfind(f00(ii).name,'aqua'))
-        tb.res{1} = f00(ii).name;
-    end
-    if ~isempty(strfind(f00(ii).name,'geci'))
-        tb.res{2} = f00(ii).name;
-    end
-    if ~isempty(strfind(f00(ii).name,'cascade'))
-        tb.res{3} = f00(ii).name;
-    end
-    if ~isempty(strfind(f00(ii).name,'calman'))
-        tb.res{4} = f00(ii).name;
-    end
-    if ~isempty(strfind(f00(ii).name,'suite2p'))
-        tb.res{5} = f00(ii).name;
+    for jj=1:numel(namex)
+        if ~isempty(strfind(f00(ii).name,namex{jj}))
+            tb.res{jj} = f00(ii).name;
+        end
     end
 end
 
@@ -34,12 +31,7 @@ datSim = xx.datSim;
 xx.datSim = cat(3,datSim,zeros(size(datSim,1),size(datSim,2),100,'uint16'));
 rOrg = load([pOut,tb.res{1}]);
 rOrg.xx = xx;
-
 gt = sim1.anaGt(rOrg,0.01);
-
-% find non-detectable parts
-
-
 
 
 %% Intersection of union
@@ -47,86 +39,59 @@ ioux = cell(0);
 for ii=1:size(tb,1)
     disp(tb.mthd{ii})
     try
-    rIn = load([pOut,tb.res{ii}]);
-    ioux{ii} = sim1.anaIoU(rIn.resx,gt,tb.thr(ii),tb.mthd{ii});
+        rIn = load([pOut,tb.res{ii}]);
+        r = rIn.resx;
+        iou0 = nan(size(r,1),size(r,2),4);
+        for jj=1:size(r,2)
+            iou0(:,jj,:) = sim1.anaIoU(r(:,jj),gt,tb.thr(ii),tb.mthd{ii});
+        end
+        ioux{ii} = iou0;
     catch
     end
 end
 
-for nn=1:6
-    figure;title(num2str(nn))
+if numel(gt.snr)==9
+    rgsnr = 3:9;  % start from 0 dB
+end
+if numel(gt.snr)==7
+    rgsnr = 1:7;
+end
+
+%% plot
+tt = {'IoU','IoU area'};
+% mks = ['o','d','*','x','s'];
+for nn=1:2
+    h0 = figure;
+    title(num2str(nn))
     for ii=1:numel(ioux)
         x = ioux{ii};
+        if isempty(x)
+            continue
+        end
         switch nn
             case 1
-                x00 = x(:,1);  % gt-pix
+                x00 = squeeze((x(:,:,2)+x(:,:,4))/2);  % vox
+                m0 = mean(x00,2);
+                e0 = std(x00,0,2)*2;  % 95% CI
             case 2
-                x00 = x(:,2);  % gt-vox
-            case 3
-                x00 = x(:,3);  % dt-pix
-            case 4
-                x00 = x(:,4);  % dt-vox
-            case 5
-                x00 = (x(:,1)+x(:,3))/2;  % pix
-            case 6
-                x00 = (x(:,2)+x(:,4))/2;  % vox
-        end        
-        plot(gt.snr,x00,'-*','LineWidth',2);hold on;
+                x00 = squeeze((x(:,:,1)+x(:,:,3))/2);  % vox
+                m0 = mean(x00,2);
+                e0 = std(x00,0,2)*2;
+        end
+        errorbar(gt.snr(rgsnr),m0(rgsnr),e0(rgsnr),'LineWidth',2);
+        %plot(gt.snr,x00,'-*','LineWidth',2);
+        hold on;
     end
-    legend(tb.mthd); title(num2str(nn));
-    set(gca,'FontSize',18); ylim([0,1]);
-end
-
-
-%% Intersection of union, weighted
-iouxwt = cell(0);
-for ii=1:size(tb,1)
-    disp(tb.mthd{ii})
-    rIn = load([pOut,tb.res{ii}]);
-    iouxwt{ii} = sim1.anaIoUWeighted(rIn,gt,tb.thr(ii),tb.mthd{ii});
-end
-
-for nn=1:3
-    figure;title(num2str(nn))
-    for ii=1:numel(iouxwt)
-        x = iouxwt{ii};
-        switch nn
-            case 1
-                x00 = x(:,1);  % gt-vox
-            case 2
-                x00 = x(:,2);  % gt-vox
-            case 3
-                x00 = (x(:,1)+x(:,2))/2;  % vox
-        end        
-        plot(gt.snr,x00,'-*','LineWidth',2);hold on;
+    set(gca,'FontSize',18);
+    ylim([0,1]); xlim([-2.5,22.5])
+    xlabel('SNR (dB)');
+    ylabel('IoU');
+    legend(tb.mthd); title(tt{nn});
+    if nn==1
+        %print(h0,['tmp/',f0,'_',tt{nn},'_sim.svg'],'-dsvg','-r800');
+        %print(h0,['tmp/',f0,'_',tt{nn},'_sim.png'],'-dpng','-r300');
+        %close(h0);
     end
-    legend(tb.mthd);
-    set(gca,'FontSize',18)
-    ylim([0,1]);
-end
-
-
-%% precision, recall and F1 score
-fxx = cell(0,3);
-for ii=1:size(tb,1)
-    disp(tb.mthd{ii})
-    rIn = load([pOut,tb.res{ii}]);
-    [a,b,c] = sim1.anaF1(rIn.resx,gt,tb.thr(ii),tb.mthd{ii});  
-    fxx{ii,1} = a;  % precision
-    fxx{ii,2} = b;  % recall
-    fxx{ii,3} = c;  % f1
-end
-
-kk = 6;
-for nn=1:3
-    figure
-    for ii=1:size(fxx,1)
-        x = fxx{ii,nn};
-        plot(gt.snr,x(:,kk),'-*','LineWidth',2);hold on;
-    end
-    legend(tb.mthd);
-    set(gca,'FontSize',18)
-    ylim([0,1]);
 end
 
 

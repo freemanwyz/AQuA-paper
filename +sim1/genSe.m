@@ -1,19 +1,18 @@
-function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,duraTime,p)
+function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,p)
     % genSe generate events in a super event (SE)
+    % First generate rising time map, then generate events from that map
     %
     % Inputs:
     % suRt: a scaling factor applied on sucRtBase
     % initTime: start time for each seed
-    % duraTime: duration for each seed
     %
-    % -- Fields in p: 
+    % -- Fields in p:
     % cRiseMin: minimum rising time distance on boundary
     % speedUpProp: propagate faster and faster
     % sz: size of this SE
     % fg: foreground map limits the propagation
     % sucRtAvg: average success rate
     % sucRtBase: 2D map of base success rate
-    % maxTime: max extra time after propagation is done. This can clip duraTime
     %
     % Output:
     % evtMap: index movie of event voxels
@@ -35,7 +34,7 @@ function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,duraTime,p)
     nEvt1 = numel(bins);
     sIdx1 = zeros(nEvt1,1);
     initTime1 = zeros(nEvt1,1);
-    duraTime1 = zeros(nEvt1,1);
+    %duraTime1 = zeros(nEvt1,1);
     sucRt1 = zeros(nEvt1,1);
     regMap1 = zeros(p.sz(1),p.sz(2));
     for ii=1:nEvt1
@@ -45,7 +44,7 @@ function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,duraTime,p)
         b0Sel = b0(ix0);
         sIdx1(ii) = sIdx(b0Sel);
         initTime1(ii) = min(initTime(b0));
-        duraTime1(ii) = max(duraTime(b0));
+        %duraTime1(ii) = max(duraTime(b0));
         sucRt1(ii) = sucRt(b0Sel);
         for jj=1:numel(b0)
             regMap1(pixLst{b0(jj)}) = ii;
@@ -60,16 +59,22 @@ function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,duraTime,p)
     end
     
     % 2D map to data, with beginning time
-    Tsim = nanmax(dlyMap1(:));
-    dAct = zeros(p.sz(1),p.sz(2),Tsim+p.maxTime);
-    for tt=1:Tsim+p.maxTime
+    % clip by extTime
+    maxRiseTime = nanmax(dlyMap1(:));
+    extTime = max(4*p.dsRate,ceil(maxRiseTime/2));
+    dAct = zeros(p.sz(1),p.sz(2),maxRiseTime+extTime);
+    for tt=1:maxRiseTime+extTime
         dAct(:,:,tt) = 1*(dlyMap1<=tt);
     end
     
-    % end time determined by duration map
+    % duration as a function of Tsim and extTime
+    % if td0~extTime, then behaves like propagation
+    % if td0>>extTime, then looks like growing
     dAct = reshape(dAct,[],size(dAct,3));
+    k = 1;
     for nn=1:numel(pixLst1)
-        td0 = duraTime1(nn);
+        td0 = k*maxRiseTime+extTime+2;  % FIXME: set k as a parameter
+        %td0 = duraTime1(nn);
         pix0 = pixLst1{nn};
         for ii=1:numel(pix0)
             x = dAct(pix0(ii),:);

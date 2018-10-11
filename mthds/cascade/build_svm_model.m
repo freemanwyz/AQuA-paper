@@ -4,7 +4,7 @@ pRes = 'D:\OneDrive\projects\glia_kira\results\sim_se_ex\';
 pDat = 'D:\OneDrive\projects\glia_kira\raw\TTXDataSetRegistered_32Bit\';
 f0 = 'FilteredNRMCCyto16m_slice3_Baseline3_L2 3-015cycle1channel1';
 tmp = load([pRes,f0,'.mat']); res = tmp.res;
-[datSim,evtLst,~,~,dAvg] = genExTop(pDat,f0,res);
+[datSim,evtLst,~,~,dAvg] = sim1.genExSVM(pDat,f0,res);
 
 %% parameters
 % same with simulation

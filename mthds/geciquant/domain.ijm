@@ -36,13 +36,20 @@ function ROI_Detection () {
     Min_area = thrSz; Max_area = "Infinity"; 
     prefix = "soma";
     Soma_Detection();
-    roiManager("save", f0+'soma.zip');  // save ROIs
+    
+    n = roiManager("count");
+    if (n>0){
+        roiManager("save", f0+'soma.zip');  // save ROIs
+    }
     roiManager("reset");
     
     Min_area = "4"; Max_area = thrSz; 
     prefix = "md";
     Microdomain_Detection();
-    roiManager("save", f0+'domain.zip');  // save ROIs
+    n = roiManager("count");
+    if (n>0){
+        roiManager("save", f0+'domain.zip');  // save ROIs
+    }    
     roiManager("reset");
 
     return;
@@ -54,8 +61,8 @@ function Soma_Detection() {
     run("Z Project...", "projection=[Max Intensity]");
     run("Smooth");
     STDtitle = getTitle();
-    setAutoThreshold("Li dark");
-    // setAutoThreshold("Default dark");
+    //setAutoThreshold("Li dark");
+    setAutoThreshold("Default dark");
 
     run("Threshold...");
     getThreshold(auto_lower,auto_upper);
@@ -64,7 +71,7 @@ function Soma_Detection() {
 
     // draw polygon
     // makeRectangle(20, 20, 100, 100)
-    makeRectangle(0, 0, width, height)
+    makeRectangle(0, 0, width, height);
     roiManager("Add");
     roiManager("select",0);
 
@@ -84,6 +91,7 @@ function Soma_Detection() {
     }
     roiManager("Select",polycnt);
     roiManager("Delete");
+    print('Counting...');
     cellcnt = roiManager("count");
     for (roi_pos=0; roi_pos<cellcnt; roi_pos++) {
         roiManager("select", roi_pos);
@@ -99,14 +107,14 @@ function Microdomain_Detection() {
     run("Z Project...", "projection=[Max Intensity]");
     run("Smooth");
     STDtitle = getTitle();
-    setAutoThreshold("Li dark");
-    // setAutoThreshold("Default dark");
+    //setAutoThreshold("Li dark");
+    setAutoThreshold("Default dark");
     run("Threshold...");
     getThreshold(auto_lower,auto_upper);
     // setThreshold(thr, auto_upper);
     run("ROI Manager...");
     
-    makeRectangle(0, 0, width, height)
+    makeRectangle(0, 0, width, height);
     roiManager("Add");
     roiManager("select",0);
 

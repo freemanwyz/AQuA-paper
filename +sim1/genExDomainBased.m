@@ -1,4 +1,4 @@
-function [datSim,evtLst,evtLstCore,seSim] = genExDomainBased(p,dmMap,dmSeIdx)
+function [datSim,evtLstAll,evtLst,seSim] = genExDomainBased(p,dmMap,dmSeIdx)
     % generate super events and events based on each domain
     % Similar to ROI based data
     % 
@@ -7,8 +7,6 @@ function [datSim,evtLst,evtLstCore,seSim] = genExDomainBased(p,dmMap,dmSeIdx)
     % Improve super event number, temporal gap and frequency
     % Spatial shifting between events in one domain
     % 
-    
-    valMin = p.valMin;
 
     dOut = zeros(p.sz(1),p.sz(2),ceil(p.nSe/p.seDensity*p.dsRate),'single');
     eOut = zeros(size(dOut),'int32');
@@ -31,18 +29,22 @@ function [datSim,evtLst,evtLstCore,seSim] = genExDomainBased(p,dmMap,dmSeIdx)
         rgw1Org = p.seRg(idx,3):p.seRg(idx,4);
         
         % events in one domain
-        [p1,seedIdx,initTime,duraTime,sucRt] = sim1.initEvt(p,idx);
+        [p1,seedIdx,initTime,sucRt] = sim1.initEvt(p,idx);
         
         if numel(seedIdx)==0  % only generate complex patterns in this step
             continue
         end
         
         gapMin = 10*p.dsRate;  % default: 5
-        gapMax = round(gapMin+(dxMax-dx0)*26*p.dsRate/(dxMax-dxMin))+10*p.dsRate;
+        if dxMax>dxMin
+            gapMax = round(gapMin+(dxMax-dx0)*20*p.dsRate/(dxMax-dxMin))+10*p.dsRate;
+        else
+            gapMax = gapMin;
+        end
         tNow = ftLen;
         
         % default setting if fixed
-        [evtMapx,regMapx,dlyMapx] = sim1.genSe(seedIdx,sucRt,initTime,duraTime,p1);
+        [evtMapx,regMapx,dlyMapx] = sim1.genSe(seedIdx,sucRt,initTime,p1);
         if p.noProp==1 || numel(dmLst{nn})<p.minPropSz
             regMapx = 1*(regMapx>0);
             x0 = sum(reshape(evtMapx,[],size(evtMapx,3)),1);
@@ -54,12 +56,13 @@ function [datSim,evtLst,evtLstCore,seSim] = genExDomainBased(p,dmMap,dmSeIdx)
             end
         end
         
-        for uu=1:1000
+        for uu=1:(p.nSe/numel(dmLst))
             fprintf('Event %d\n',uu)
             
             % generate an event or a super event
             if p.fixed==0 && numel(dmLst{nn})>=p.minPropSz
-                [evtMap,regMap,dlyMap] = sim1.genSe(seedIdx,sucRt,initTime,duraTime,p1);
+                [p1,seedIdx,initTime,sucRt] = sim1.initEvt(p,idx);
+                [evtMap,regMap,dlyMap] = sim1.genSe(seedIdx,sucRt,initTime,p1);
             else
                 evtMap = evtMapx;
                 regMap = regMapx;
@@ -86,7 +89,7 @@ function [datSim,evtLst,evtLstCore,seSim] = genExDomainBased(p,dmMap,dmSeIdx)
                 case 2
                     datSeVal = (evtMap>0)*0.2;
             end
-            datSeVal(datSeVal>0) = max(datSeVal(datSeVal>0),valMin);
+            datSeVal(datSeVal>0) = max(datSeVal(datSeVal>0),p.valMin);
                         
             % perturbate location of this event
             rgh1 = rgh1Org;
@@ -122,15 +125,28 @@ function [datSim,evtLst,evtLstCore,seSim] = genExDomainBased(p,dmMap,dmSeIdx)
             seSim{seCnt} = xx;
             seCnt = seCnt + 1;
         end
-    end
-    
-    % add flexible sparklings    
-    
+    end   
     
     % post processing
-    [datSim,evtLst,evtLstCore] = sim1.postProcSim(dOut,eOut,p);
+    [datSim,evtLst] = sim1.postProcSim(dOut,eOut,p);
+    
+    % add sparklings outside domains
+    if p.useSpk>0
+        [datSim,evtSpk] = sim1.addSparkling(datSim,p);
+        evtLstAll = [evtLst,evtSpk];
+    else
+        evtLstAll = evtLst;
+    end
     
 end
+
+
+
+
+
+
+
+
 
 
 

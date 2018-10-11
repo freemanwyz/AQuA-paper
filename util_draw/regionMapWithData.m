@@ -28,7 +28,7 @@ if isa(reCon,'uint8')
 end
 
 if ~exist('minSz','var') || isempty(minSz)
-    minSz = 0;
+    minSz = 1;
 end
 
 if ~exist('minAmp','var') || isempty(minAmp)
