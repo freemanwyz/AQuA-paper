@@ -16,6 +16,7 @@ name = getArgument;
 namex = split(name,',');
 f0 = namex[0];
 thrSz = namex[1];
+thrInt = namex[2];
 
 MainStack = getTitle();
 Stack.getDimensions(width, height, channels, slices, frames);
@@ -43,7 +44,7 @@ function ROI_Detection () {
     }
     roiManager("reset");
     
-    Min_area = "4"; Max_area = thrSz; 
+    Min_area = "15"; Max_area = thrSz; 
     prefix = "md";
     Microdomain_Detection();
     n = roiManager("count");
@@ -58,11 +59,14 @@ function ROI_Detection () {
 // ---------Soma Detection -----------
 function Soma_Detection() {
     selectWindow(StackTitle);
+    //run("Z Project...", "projection=[Average Intensity]");
     run("Z Project...", "projection=[Max Intensity]");
     run("Smooth");
     STDtitle = getTitle();
+    
+    setThreshold(thrInt,1000);
     //setAutoThreshold("Li dark");
-    setAutoThreshold("Default dark");
+    //setAutoThreshold("Default dark");
 
     run("Threshold...");
     getThreshold(auto_lower,auto_upper);
@@ -104,11 +108,15 @@ function Soma_Detection() {
 // ----------- Microdomain detection --------------------------------------------------
 function Microdomain_Detection() {
     selectWindow(StackTitle);
+    //run("Z Project...", "projection=[Average Intensity]");
     run("Z Project...", "projection=[Max Intensity]");
     run("Smooth");
     STDtitle = getTitle();
+    
+    setThreshold(thrInt,1000);
     //setAutoThreshold("Li dark");
-    setAutoThreshold("Default dark");
+    //setAutoThreshold("Default dark");
+    
     run("Threshold...");
     getThreshold(auto_lower,auto_upper);
     // setThreshold(thr, auto_upper);

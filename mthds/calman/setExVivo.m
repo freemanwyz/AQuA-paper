@@ -5,7 +5,7 @@ function [options,K,patches,tau,p] = setExVivo(sizY,fr,tsub)
     
     patches = construct_patches(sizY(1:end-1),patch_size,overlap);
     K = 50;                                           % number of components to be found
-    tau = 8;                                          % std of gaussian kernel (half size of neuron), 8
+    tau = 16;                                          % std of gaussian kernel (half size of neuron), 8
     p = 2;                                            % order of autoregressive system (p = 0 no dynamics, p=1 just decay, p = 2, both rise and decay)
     merge_thr = 0.8;                                  % merging threshold, 0.8
     
@@ -17,7 +17,7 @@ function [options,K,patches,tau,p] = setExVivo(sizY,fr,tsub)
         'tsub',1,...                                % further temporal downsampling when processing
         'merge_thr',merge_thr,...                   % merging threshold
         'gSig',tau,...
-        'max_size_thr',5000,'min_size_thr',25,...  % max/min acceptable size for each component
+        'max_size_thr',5000,'min_size_thr',25,...   % max/min acceptable size for each component
         'spatial_method','regularized',...          % method for updating spatial components
         'df_prctile',50,...                         % take the median of background fluorescence to compute baseline fluorescence
         'fr',fr/tsub,...                            % downsamples

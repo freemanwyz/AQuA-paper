@@ -8,14 +8,18 @@ function [evtDtLst,evtDtPixLst] = anaExtractDt(rDt,mthdX,thrxx,sz)
     evtDtPixLst = cell(nNoise,1);
     for ii=1:nNoise
         evtDt = rDt{ii}.evt;
-        switch(mthdX)
-            case 'AQuA'
-                evtDt = evtDt(rDt{ii}.fts.curve.dffMaxZ>=thrxx);
-            case 'CaSCaDe'
-                evtDt = evtDt(rDt{ii}.z>=thrxx & rDt{ii}.svm1_pk_class>0);
-            otherwise
-                evtDt = evtDt(rDt{ii}.z>=thrxx);
-        end
+        evtDt = evtDt(rDt{ii}.z>=thrxx);
+
+        % switch(mthdX)
+        %     case 'AQuA'
+        %         evtDt = evtDt(rDt{ii}.fts.curve.dffMaxZ>=thrxx);
+        %     case 'AQuA-dev'
+        %         evtDt = evtDt(rDt{ii}.fts.curve.dffMaxZ>=thrxx);
+        %     case 'CaSCaDe'
+        %        evtDt = evtDt(rDt{ii}.z>=thrxx & rDt{ii}.svm1_pk_class>0);
+        %     otherwise
+        %         evtDt = evtDt(rDt{ii}.z>=thrxx);
+        % end
         
         evtDtLst{ii} = evtDt;
         evtDtPix = cell(0);

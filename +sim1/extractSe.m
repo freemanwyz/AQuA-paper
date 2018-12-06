@@ -1,5 +1,9 @@
-function p = extractSe(dat,seLst)
+function p = extractSe(dat,seLst,diExtra)
     % extractSe extract information from detected super events for simulation
+    
+    if ~exist('diExtra','var')
+        diExtra = 0;
+    end
     
     sz = size(dat);
     seLst = seLst(~cellfun(@isempty,seLst));
@@ -14,10 +18,12 @@ function p = extractSe(dat,seLst)
     gap0 = 5;
     
     nSe = numel(seLst);
-    bri = nan(nSe,1);
+    df = nan(nSe,1);
     rgLst = nan(nSe,6);  % range of se
+    areaPerFrameLst = cell(nSe,1);  % area per frame in a SE
     pixMapLst = cell(nSe,1);  % 2D map of spatial footprint
     voxMapLst = cell(nSe,1);  % 3D map of super events
+    seDfLst = cell(nSe,1);  % dF data for super events
     pgTmpLst = cell(nSe,2);  % propagation speed templates using std or avg
     actMap = zeros(sz);  % active voxel map, for foreground calculation
     cntMap = zeros(sz(1),sz(2));
@@ -28,12 +34,20 @@ function p = extractSe(dat,seLst)
         vox0 = seLst{ii};
         actMap(vox0) = ii;
         
-        bri(ii) = mean(dF(vox0));
+        df(ii) = mean(dF(vox0));
 
         [ih,iw,it] = ind2sub(sz,vox0);
         ihw = sub2ind([sz(1),sz(2)],ih,iw);
         ihw = unique(ihw);
         cntMap(ihw) = cntMap(ihw)+1;
+        
+        % area per frame for each super event
+        apf0 = zeros(max(it)-min(it)+1,1);
+        for jj=1:numel(apf0)
+            tt = min(it)+jj-1;
+            apf0(jj) = sum(it==tt);
+        end
+        areaPerFrameLst{ii} = apf0;
         
         % crop super events
         rgh = max(min(ih)-gap0,1):min(max(ih)+gap0,sz(1));
@@ -46,8 +60,12 @@ function p = extractSe(dat,seLst)
         voxMap0 = zeros(numel(rgh),numel(rgw),max(it1));
         pixMap0(sub2ind(size(pixMap0),ih1,iw1)) = 1;
         voxMap0(sub2ind(size(voxMap0),ih1,iw1,it1)) = 1;
+        seDfLst{ii} = dF(rgh,rgw,min(it):max(it));
                 
         % clean the spatial map
+        if diExtra>0
+            pixMap0 = imdilate(pixMap0,strel('square',diExtra));
+        end
         pixMap0 = bwmorph(pixMap0,'close');
         pixMap0 = imfill(pixMap0,'holes');
         pixMap0 = bwmorph(pixMap0,'open');
@@ -58,8 +76,15 @@ function p = extractSe(dat,seLst)
         cc0L = cellfun(@numel,cc0.PixelIdxList);
         [~,ix] = max(cc0L);
         pixMap0 = pixMap0*0;
-        pixMap0(cc0.PixelIdxList{ix}) = 1;        
+        pixMap0(cc0.PixelIdxList{ix}) = 1;   
         
+        % shrink events for easier locationing
+        [ih00,iw00] = find(pixMap0>0);
+        rgh = min(rgh)-1+(min(ih00):max(ih00));
+        rgw = min(rgw)-1+(min(iw00):max(iw00));
+        pixMap0 = pixMap0(min(ih00):max(ih00),min(iw00):max(iw00));
+        voxMap0 = voxMap0(min(ih00):max(ih00),min(iw00):max(iw00),:);
+               
         rgLst(ii,:) = [min(rgh),max(rgh),min(rgw),max(rgw),min(it),max(it)];
         pixMapLst{ii} = pixMap0;
         voxMapLst{ii} = voxMap0;
@@ -85,9 +110,10 @@ function p = extractSe(dat,seLst)
     p.seRg = rgLst;
     p.sePix = pixMapLst;
     p.seVox = voxMapLst;
+    p.seDf = seDfLst;
     p.sePg = pgTmpLst;
-    p.seBri = bri/max(bri(:));
-    
+    p.seDfAvg = df;
+    p.areaPerFrame = areaPerFrameLst;
     p.sz = sz;
     p.fg = fg;  % foreground part of data
     p.duraMap = duraMap;

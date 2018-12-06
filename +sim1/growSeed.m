@@ -52,6 +52,22 @@ function [regMap,delayMap,pixLst] = growSeed(seedIdx,initTime,sucRt,regMask,p)
                 regMap(pix0a) = nn;
                 delayMap(pix0a) = floor(tt);
             end
+            
+            % fill small holes
+            regx = regMap==nn;
+            xhole = find(imfill(regx,'holes')-regx);
+            regMap(xhole) = nn;
+            pix0 = union(pix0,xhole);
+            
+            % fill delay time
+            for ii=1:numel(xhole)
+                [ih00,iw00] = ind2sub([H,W],xhole(ii));
+                rgh00 = max(ih00-2,1):min(ih00+2,H);
+                rgw00 = max(iw00-2,1):min(iw00+2,W);
+                x00 = delayMap(rgh00,rgw00);
+                delayMap(ih00,iw00) = nanmean(x00(:));
+            end
+            
             pixLst{nn} = pix0;
         end
     end

@@ -13,8 +13,16 @@ function [domainMap,domainSeIdx] = genDomains(p)
             [~,seLenIx] = sort(seLen,'descend');
         case 'average'
             seLenIx = find(seLen>50 & seLen<500);
+            seLenIx = seLenIx(randperm(numel(seLenIx)));
+        case 'average2'
+            seLenIx = find(seLen>500 & seLen<2000);
+            seLenIx = seLenIx(randperm(numel(seLenIx)));
+        case 'above-avg'
+            seLenIx = find(seLen>=500);
+            seLenIx = seLenIx(randperm(numel(seLenIx)));
         case 'random'
             seLenIx = find(seLen>30);
+            seLenIx = seLenIx(randperm(numel(seLenIx)));
     end
     
     % build domain map
@@ -40,6 +48,12 @@ function [domainMap,domainSeIdx] = genDomains(p)
             regMap = p.sePix{idx};
             if isempty(regMap)
                 break
+            end
+            
+            p00 = regionprops(regMap>0,'Perimeter');
+            s00 = sum(regMap(:)>0);
+            if pi*(p00.Perimeter/2/pi)^2/s00>p.circMax
+                continue
             end
             
             rgh1 = p.seRg(idx,1):p.seRg(idx,2);

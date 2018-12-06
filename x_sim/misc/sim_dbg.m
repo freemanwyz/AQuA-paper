@@ -9,6 +9,7 @@ f0 = 'ex-roi_area-avg-min-100_smo-st_201810091742';
 
 % simulation setup
 xx = sim1.prep_sim(pIn,pOut,f0);
+xx = xx{1};
 
 
 %%

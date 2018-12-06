@@ -2,7 +2,7 @@ function [bdLst,actFrame] = getRegInfo(x0,y0,msk)
     
     nReg = numel(x0);
     
-    gapxy = 2;
+    gapxy = 4;
     bdLst = cell(0);
     [H0,W0,~] = size(msk);
     actFrame = zeros(nReg,size(msk,3));

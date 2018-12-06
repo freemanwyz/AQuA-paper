@@ -56,6 +56,7 @@ function res = aqua_top(datOrg,opts)
     res.fts = ftsLstE;
     res.dffMat = dffMatE;
     res.dMat = dMatE;
+    res.z = res.fts.curve.dffMaxZ;
     
 end
 

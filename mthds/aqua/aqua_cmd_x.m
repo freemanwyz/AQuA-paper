@@ -1,10 +1,12 @@
 %% setup
-addpath(genpath('../../repo/aqua/'));
+addpath(genpath('../../repo/aqua_20180705/'));
 
 % -- preset 1: in vivo. 2: ex vivo. 3: GluSnFR
 preset = 1;
-p0 = 'D:\neuro_WORK\glia_kira\raw\Mar14_InVivoDataSet\';
-f0 = '2826451(4)_1_2_4x_reg_200um_dualwv-001.tif';
+% p0 = 'C:\Users\eric\OneDrive\projects\glia_kira\dbg\181113error\';
+% f0 = '181107_s3_003_noError.tif';
+p0 = 'D:\OneDrive\projects\glia_kira\se_aqua\dat\';
+f0 = '2826451(4)_1_2_4x_reg_200um_dualwv-001_nr.tif';
 % preset = 2;
 % p0 = 'D:\neuro_WORK\glia_kira\raw\TTXDataSetRegistered_32Bit\';
 % f0 = 'FilteredNRMCCyto22m_slice2_Baseline2_Layer2_3-008cycle1channel1.tif';
@@ -20,6 +22,8 @@ f0 = '2826451(4)_1_2_4x_reg_200um_dualwv-001.tif';
 
 opts = util.parseParam(preset,0,'parameters1.csv');
 
+opts.spSz = 9;
+opts.smoCurve = 0.1;
 % opts.smoXY = 1;
 % opts.thrARScl = 2;
 % opts.movAvgWin = 15;
@@ -42,7 +46,6 @@ opts = util.parseParam(preset,0,'parameters1.csv');
 %% detection
 [dat,dF,arLst,lmLoc,opts,dL] = burst.actTop(datOrg,opts);  % foreground and seed detection
 [svLst,~,riseX] = burst.spTop(dat,dF,lmLoc,[],opts);  % super voxel detection
-
 [riseLst,datR,evtLst,seLst] = burst.evtTop(dat,dF,svLst,riseX,opts);  % events
 [ftsLst,dffMat] = fea.getFeatureQuick(datOrg,evtLst,opts);
 

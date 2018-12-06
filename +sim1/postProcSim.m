@@ -1,4 +1,13 @@
 function [datSimNew,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
+    % spatial and temporally extend signals and adjust the event map
+    %
+    % spatial smoothing is performed first, and we remove signal lower than
+    % p.valMin. After temporal smoothing, we keep the 20% to 20% signal, 
+    % even the signal is lower than p.valMin
+    %
+    % For events that do not propagate, this makes the ground truth do not
+    % change shape along time
+    %
     
     valMin = p.valMin;
     dOut(dOut<valMin) = 0;
@@ -16,22 +25,21 @@ function [datSimNew,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
         end
         xNew = datAct2>0 & dOut==0;
         eOut(xNew) = -1;
-        %eOut(datAct2<valMin) = 0;  % avoid too weak signals
-        %datAct2(datAct2<valMin) = 0;
     end
     
     if p.ignoreFilterTemp==0
         fprintf('Temporal filtering\n')
-        datAct3 = imfilter(datAct2,p.filter3D);  % mimic calcium dynamics
-        %datAct3(datAct3<valMin) = 0;   % avoid too weak signals     
+        datAct3 = imfilter(datAct2,p.filter3D);  % mimic calcium dynamics   
         xNew = datAct3>0 & datAct2==0;
         eOut(xNew) = -1;
-        %eOut(datAct3<valMin) = 0;  % avoid too weak signals        
     else
         datAct3 = datAct2;
     end
     
     % downsample the movie and event map
+    if isfield(p,'smoBefDs') && p.smoBefDs>0
+        datAct3 = movmean(datAct3,p.xRate,3);
+    end
     datSim = datAct3(:,:,1:p.xRate:end);  
     evtSim = eOut(:,:,1:p.xRate:end);
     evtLstCore = label2idx(evtSim);
@@ -51,7 +59,7 @@ function [datSimNew,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
         end
         for ii=1:numel(lst0)
             if mod(ii,10000)==0
-                fprintf('%d\n',100*ii/numel(lst0))
+                %fprintf('%d\n',100*ii/numel(lst0))
             end
             vox0 = lst0(ii);
             [ih0,iw0,it0] = ind2sub([H,W,T],vox0);
@@ -73,6 +81,7 @@ function [datSimNew,evtLst,evtLstCore] = postProcSim(dOut,eOut,p)
         evtMapNew = zeros(size(evtSimExt),'int32');
         datSimNew = zeros(size(datSim),'single');        
         for ii=1:numel(evtLst)
+            %fprintf('%d\n',ii)
             evt0 = evtLst{ii};
             if isempty(evt0)
                 continue

@@ -1,5 +1,7 @@
 function ff = pltFlowCommon(datSel,p,xType)
-    % pltFlowCommon generate plots based on two super events (each may contain several events)
+    % pltFlowCommon generate plots based on two super events 
+    % (each may contain several events)
+    %
     % xType:
     % single_evt: smoothness constraint, some peaks in the event
     % two_evts_time: single cycle constraint
@@ -14,6 +16,9 @@ function ff = pltFlowCommon(datSel,p,xType)
     axRaw = axes(ff);
     [H0,W0,T0] = size(datSel);
     
+    case_super_voxels = {'sv','sv_node','sv_node_a','sv_node_grp'};
+    case_peak_squares = {'single_evt','two_evts_time','two_evts_spatial','peaks'};
+    
     for ii=1:T0
         % raw data and events
         img0 = datSel(:,:,ii);
@@ -22,7 +27,7 @@ function ff = pltFlowCommon(datSel,p,xType)
         msk0Sel = p.mskSel(:,:,ii);  % for selected events
                 
         % super voxles and events are differently treated
-        if strcmp(xType,'sv') || strcmp(xType,'sv_node') || strcmp(xType,'sv_node_a') || strcmp(xType,'sv_node_grp')         
+        if any(strcmp(xType,case_super_voxels))
             if ii<=p.T0
                 Lx = p.L1rgb;
             else
@@ -67,10 +72,10 @@ function ff = pltFlowCommon(datSel,p,xType)
         addSliceRGB(imgx,-ii,axRaw,alphaMap);
         
         % pixel regions
-        if sum(strcmp(xType,{'single_evt','two_evts_time','two_evts_spatial','peaks'}))>0
+        if any(strcmp(xType,case_peak_squares))
             for kk=1:numel(p.bdLst)
                 bd0 = p.bdLst{kk};
-                if p.actFrame(kk,ii)>0
+                if p.actFrame(kk,ii)>0  % frames with activities for this region
                     alp = 1;
                     if strcmp(p.curveCol,'curve')
                         colx = p.colxPixReg(kk,:);
@@ -80,7 +85,7 @@ function ff = pltFlowCommon(datSel,p,xType)
                     end
                     patch(bd0(:,2),bd0(:,1),bd0(:,1)*0-ii+0.1,colx,'FaceAlpha',alp,...
                         'EdgeColor',colx);hold on
-                else                    
+                else  % background frames for this region                      
                     if strcmp(p.curveCol,'curve')
                         alp = 0;
                         colx = p.colxPixReg(kk,:);
@@ -138,16 +143,22 @@ function ff = pltFlowCommon(datSel,p,xType)
     
     % super voxel nodes
     if strcmp(xType,'sv_node')
-        scatter3(p.sLoc1(:,2),p.sLoc1(:,1),-p.sLoc1(:,3)+0.1,50,[1 1 1],'filled','MarkerEdgeColor','k');
-        scatter3(p.sLoc2(:,2),p.sLoc2(:,1),-p.sLoc2(:,3)-p.T0+0.1,50,[1 1 1],'filled','MarkerEdgeColor','k');
+        scatter3(p.sLoc1(:,2),p.sLoc1(:,1),-p.sLoc1(:,3)+0.1,50,[1 1 1],...
+            'filled','MarkerEdgeColor','k');
+        scatter3(p.sLoc2(:,2),p.sLoc2(:,1),-p.sLoc2(:,3)-p.T0+0.1,50,[1 1 1],...
+            'filled','MarkerEdgeColor','k');
     end
     if strcmp(xType,'sv_node_a')
-        scatter3(p.sLoc1(:,2),p.sLoc1(:,1),-p.sLoc1(:,3)+0.1,50,[1 0.5 0],'filled','MarkerEdgeColor','k');
-        scatter3(p.sLoc2(:,2),p.sLoc2(:,1),-p.sLoc2(:,3)-p.T0+0.1,50,[1 1 1],'filled','MarkerEdgeColor','k');
+        scatter3(p.sLoc1(:,2),p.sLoc1(:,1),-p.sLoc1(:,3)+0.1,50,[1 0.5 0],...
+            'filled','MarkerEdgeColor','k');
+        scatter3(p.sLoc2(:,2),p.sLoc2(:,1),-p.sLoc2(:,3)-p.T0+0.1,50,[1 1 1],...
+            'filled','MarkerEdgeColor','k');
     end
     if strcmp(xType,'sv_node_grp')
-        scatter3(p.sLoc1(:,2),p.sLoc1(:,1),-p.sLoc1(:,3)+0.1,50,[1 0.5 0],'filled','MarkerEdgeColor','k');
-        scatter3(p.sLoc2(:,2),p.sLoc2(:,1),-p.sLoc2(:,3)-p.T0+0.1,50,[0 1 0.75],'filled','MarkerEdgeColor','k');
+        scatter3(p.sLoc1(:,2),p.sLoc1(:,1),-p.sLoc1(:,3)+0.1,50,[1 0.5 0],...
+            'filled','MarkerEdgeColor','k');
+        scatter3(p.sLoc2(:,2),p.sLoc2(:,1),-p.sLoc2(:,3)-p.T0+0.1,50,[0 1 0.75],...
+            'filled','MarkerEdgeColor','k');
     end
     
     % pixel map

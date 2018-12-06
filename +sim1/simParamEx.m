@@ -27,12 +27,16 @@ function p=simParamEx(p)
     p.sparklingSz = [9,25];  % sparkling size range
     p.sparklingDensity = 2;  % average number of sparklings per frame
     p.minArea = 64;
+    p.dxSz = 100;
+    p.circMax = inf;
     
     % separation, seed location and propagation (events)
     p.minPropSz = 500;  % minimum size to allow propagation
     p.evtArea = 500;  % number of pixel each evnet in an SE need. For small SE, only one event
     p.seedMinDist = 100;  % minimum distance between seeds in one super event
     
+    p.propType = 'grow';  % growing or moving type propagation
+    p.propTypeScore = 1;  % 1: growing type. 0: moving type.
     p.cRise = 2;  % temporal distance between seeds after downsample
     p.cRiseMin = p.dsRate*p.cRise;  % temporal distance between seeds before downsample
     p.seedRtAdd = 0.5;  % minimum success rate
@@ -43,7 +47,7 @@ function p=simParamEx(p)
     % temporal filter (post processing)
     p.tfUp = p.dsRate;  % onset part filter
     p.tfDn = 2*p.dsRate;  % offset part filter
-    p.filter3D = sim1.getDecayFilter(p.tfUp,p.tfDn);  % filter in time direction
+    p.filter3D = sim1.getDecayFilter(p.tfUp,p.tfDn,0);  % filter in time direction
     p.ignoreFilterSpa = 0;
     p.ignoreFilterTemp = 0;
     p.smoXY = 1;

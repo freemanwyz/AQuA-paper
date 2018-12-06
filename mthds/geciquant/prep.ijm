@@ -90,7 +90,8 @@ function Subtract_Background () {
             for (m=0; m<frame_height; m++) {
                 // Subtract the above calculated average
                 img_pix[m] = getPixel(n,m);
-                new_pix[m] = img_pix[m]-pix_mean;
+                new_pix[m] = img_pix[m];
+                //new_pix[m] = img_pix[m]-pix_mean;
                 setPixel(n,m, new_pix[m]);
             }
         }

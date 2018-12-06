@@ -14,6 +14,7 @@ var width, height, channels, slices, frames;
 name = getArgument;
 namex = split(name,',');
 f0 = namex[0];  // working directory
+thrSeg = namex[1];  // intensity threshold for events
 // f0 = "C:/Users/Eric/AppData/Local/Temp/geci/"
 
 MainStack = getTitle();
@@ -41,8 +42,8 @@ run("Quit");
 
 // --------------Segmentation of ROI ----------------------------------------------------
 function ROI_Segmentation () {
-    min_area = "50";  // minimum sub-ROI area (pixels)
-    persubroi_delete = "0.6";  // fraction of soma area for sub-ROI deletion
+    min_area = "500";  // minimum sub-ROI area (pixels), 50
+    persubroi_delete = "2";  // fraction of soma area for sub-ROI deletion, 0.6
     spatiotemporal_SubROI();
     return;
 }
@@ -57,7 +58,8 @@ function ROI_Segmentation () {
 function spatiotemporal_SubROI() {
     // ---------- Generate sub ROIs by averaging 3 frames ----------------
     selectWindow(StackTitle);
-    run("Grouped Z Project...", "projection=[Standard Deviation] group=5");
+    //run("Grouped Z Project...", "projection=[Average Intensity] group=3");
+    run("Grouped Z Project...", "projection=[Standard Deviation] group=3");
     subStackTitle = getTitle();
     cnt = roiManager("count");
     if (cnt == 1) {
@@ -65,7 +67,8 @@ function spatiotemporal_SubROI() {
         roiManager("select", 0);        // Select the somatic ROI (or S-ROI)
         getStatistics(soma_area, soma_mean);    // Get the area covered by S-ROI
 
-        setAutoThreshold("Default dark");   // Threshold the substack
+		setThreshold(thrSeg,100000);
+        //setAutoThreshold("Default dark");   // Threshold the substack
         //setAutoThreshold("Li dark stack");   // Threshold the substack
         
         run("Analyze Particles...", "size=min_area-soma_area circularity=0.00-1.00 show=Outlines display add stack");

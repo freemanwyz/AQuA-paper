@@ -60,7 +60,7 @@ function [datSim,evtLstAll,evtLst,seSim] = genExDomainBased(p,dmMap,dmSeIdx)
             fprintf('Event %d\n',uu)
             
             % generate an event or a super event
-            if p.fixed==0 && numel(dmLst{nn})>=p.minPropSz
+            if p.noProp==0 && p.fixed==0 && numel(dmLst{nn})>=p.minPropSz
                 [p1,seedIdx,initTime,sucRt] = sim1.initEvt(p,idx);
                 [evtMap,regMap,dlyMap] = sim1.genSe(seedIdx,sucRt,initTime,p1);
             else

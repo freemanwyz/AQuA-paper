@@ -1,4 +1,4 @@
-function res0 = geci_pipe(datSimNy,thrSz)
+function res0 = geci_pipe(datSimNy,thrSz,thrInt,thrSeg)
     % geci_pipe is an automatic pipeline for GECI-quant
     % modified from GECI-quant by removing GUI parts
     % call Fiji using system call and parameters for ImageJ macro
@@ -13,9 +13,11 @@ function res0 = geci_pipe(datSimNy,thrSz)
     % DO NOT open data in macro; specify it in system call, otherwise we will
     % face problems when setting parameters in 'run' calls
     %
+    % thrInt: manual thresholds for ROI detection (max proj.)
+    % thrSeg: manual thresholds for soma segmentation (std. dev.)
+    %
     % TODO: 
     % Expanding signal, but better to be done in Matlab
-    % Manual thresholds for somatic and microdomain ROI detection
     %
     % Yizhi Wang, yzwang@vt.edu
     %
@@ -27,26 +29,30 @@ function res0 = geci_pipe(datSimNy,thrSz)
         mkdir(f2)
     end
     
-    writeTiffSeq([f2,'sim.tif'],datSimNy);
+    writeTiffSeq([f2,'sim.tif'],datSimNy,8);
     
     % pre-process
     % output is deBg.tif
-    m0 = [pwd,'/mthds/geciquant/prep.ijm',' ',f2];
-    p0 = [f2,'sim.tif'];
-    system(['fiji',' ',p0,' ','-macro',' ',m0]);
+    if 0
+        m0 = [pwd,'/mthds/geciquant/prep.ijm',' ',f2];
+        p0 = [f2,'sim.tif'];
+        system(['fiji',' ',p0,' ','-macro',' ',m0]);
+    end
     
     % domain detection
     % output is domain.zip and soma.zip
-    p0 = [f2,'deBg.tif'];
-    m0 = [pwd,'/mthds/geciquant/domain.ijm',' ',f2,',',num2str(thrSz)];
+    p0 = [f2,'sim.tif'];
+    %p0 = [f2,'deBg.tif'];
+    m0 = [pwd,'/mthds/geciquant/domain.ijm',' ',...
+        f2,',',num2str(thrSz),',',num2str(thrInt)];
     system(['fiji',' ',p0,' ','-macro',' ',m0]);
     if exist([f2,'soma.zip'],'file')
         unzip([f2,'soma.zip'],[f2,'soma']);
         
         % segmentation for soma
         % output is soma_seg.zip for each soma
-        p0 = [f2,'deBg.tif'];
-        m0 = [pwd,'/mthds/geciquant/seg.ijm',' ',f2];
+        p0 = [f2,'sim.tif'];
+        m0 = [pwd,'/mthds/geciquant/seg.ijm',' ',f2,',',num2str(thrSeg)];
         system(['fiji',' ',p0,' ','-macro',' ',m0]);
     end
     
@@ -64,7 +70,15 @@ function res0 = geci_pipe(datSimNy,thrSz)
     xroi = cell(0);
     for nn=1:numel(fn)
         xroi0 = ReadImageJROI(fn{nn});
-        xroi0 = xroi0(2:end);
+%         if nn==1
+            xroi0 = xroi0(2:end);
+%         else
+%             if numel(xroi0)>1  % if detected
+%                 xroi0 = xroi0(2:end);
+%             else  % if nothing detection
+%                 xroi0 = xroi0(1);
+%             end
+%         end
         xroi = [xroi,xroi0]; %#ok<AGROW>
     end
     

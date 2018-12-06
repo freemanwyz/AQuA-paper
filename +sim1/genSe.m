@@ -34,7 +34,6 @@ function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,p)
     nEvt1 = numel(bins);
     sIdx1 = zeros(nEvt1,1);
     initTime1 = zeros(nEvt1,1);
-    %duraTime1 = zeros(nEvt1,1);
     sucRt1 = zeros(nEvt1,1);
     regMap1 = zeros(p.sz(1),p.sz(2));
     for ii=1:nEvt1
@@ -44,7 +43,6 @@ function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,p)
         b0Sel = b0(ix0);
         sIdx1(ii) = sIdx(b0Sel);
         initTime1(ii) = min(initTime(b0));
-        %duraTime1(ii) = max(duraTime(b0));
         sucRt1(ii) = sucRt(b0Sel);
         for jj=1:numel(b0)
             regMap1(pixLst{b0(jj)}) = ii;
@@ -68,10 +66,10 @@ function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,p)
     end
     
     % duration as a function of Tsim and extTime
-    % if td0~extTime, then behaves like propagation
+    % if td0~extTime, then behaves like moving
     % if td0>>extTime, then looks like growing
     dAct = reshape(dAct,[],size(dAct,3));
-    k = 1;
+    k = p.propTypeScore;
     for nn=1:numel(pixLst1)
         td0 = k*maxRiseTime+extTime+2;  % FIXME: set k as a parameter
         %td0 = duraTime1(nn);
@@ -84,6 +82,17 @@ function [evtMap,regMap1,dlyMap1] = genSe(sIdx,sucRt,initTime,p)
         end
     end
     dAct = reshape(dAct,[p.sz(1),p.sz(2),size(dAct,2)]);
+    
+    % (optional) make propagation faster
+    % !! OK for growing type, strange for moving type
+    if p.propAccel>0
+        dAct0 = dAct(:,:,1:maxRiseTime);
+        dAct1 = dAct(:,:,maxRiseTime+1:end);
+        dAct0a = dAct0(:,:,1:p.propAccel:end);
+        dt = size(dAct0,3) - size(dAct0a,3);
+        dAct0b = repmat(dAct0(:,:,end),1,1,dt);
+        dAct = cat(3,dAct0a,dAct0b,dAct1);
+    end    
     
     % event map
     evtMap = zeros(size(dAct));

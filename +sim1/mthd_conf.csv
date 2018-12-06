@@ -1,5 +1,6 @@
 mthd,thr,res
-AQuA,0,res_aqua_
+AQuA,0,res_aqua_stable_
+AQuA-dev,0,res_aqua_dev_
 GECI-quant,0,res_geci_
 CaSCaDe,0,res_cascade_
 CaImAn,0,res_calman_
