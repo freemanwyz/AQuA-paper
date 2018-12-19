@@ -1,7 +1,8 @@
 % run simulation for non-ROI and propagation type events
 fTop = getWorkPath();
 pIn = [fTop,'simDat/event_20181023/'];
-pOut = [fTop,'sim/event_20181023/'];
+pOut = [fTop,'sim/event_try/'];
+% pOut = [fTop,'sim/event_20181023/'];
 
 f0 = {
     {'nonroi-locChg','loc-snr10',10,'loc5-snr',3},...
@@ -13,14 +14,16 @@ f0 = {
 
 mthdNames = {'aqua-stable','cascade','calman','suite2p','geci'};
 % m = 1
-nRepUsed = 10;
+saveMe = 0;  % 1
+nRepUsed = 1;  % 1e8
 ignoreVar = 0;
 ignoreSnr = 0;
 
 snrVec = [0,2.5,5,7.5,10,15,20];
 smoVec = flip([0.1,0.5,0.6,0.7,0.8,0.9,1]);
 
-runsX = {[],1,2};
+runsX = {[]};
+% runsX = {[],1,2};
 % runsX = {2};
 for nn=1:numel(runsX)
     simIdx = runsX{nn};
@@ -51,7 +54,7 @@ for nn=1:numel(runsX)
                 xx = sim1.prep_sim(pIn,pOut,f0{ii}{1},simIdx,snrx,smoVec(ix),jj,nRepUsed);
                 for kk=1:numel(xx)
                     xx{kk}.f1 = f0{ii}{2};
-                    xx{kk}.saveMe = 1;
+                    xx{kk}.saveMe = saveMe;
                 end
                 
                 % methods
@@ -90,7 +93,7 @@ for nn=1:numel(runsX)
             xx = sim1.prep_sim(pIn,pOut,f0{ii}{1},simIdx,[],[],f0{ii}{5},nRepUsed);
             for kk=1:numel(xx)
                 xx{kk}.f1 = f0{ii}{4};
-                xx{kk}.saveMe = 1;
+                xx{kk}.saveMe = saveMe;
             end
             
             opts = [];

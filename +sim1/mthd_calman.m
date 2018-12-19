@@ -41,6 +41,16 @@ function mthd_calman(xxLst)
             iouxxCal(ii,kk) = (nanmean(iouVoxD2G)+nanmean(iouVoxG2D))/2;
             iouxxCal2D(ii,kk) = (nanmean(iouPixD2G)+nanmean(iouPixG2D))/2;
             
+            if 0  % check ROI overlap
+                r0 = res0.roiLst;
+                m0 = zeros(size(xx.dAvg));
+                for ee=1:numel(r0)
+                    m0(r0{ee}) = m0(r0{ee})+1;
+                end
+                figure;imagesc(m0);colorbar
+                zzshow(regionMapWithData(r0,m0*0))
+            end
+            
             res0a = [];
             res0a.evt = res0.evt;
             res0a.z = res0.z;          
@@ -49,6 +59,27 @@ function mthd_calman(xxLst)
             csvwrite(['./tmp/',xx.f1,'_','calman','_',xx.f0,'_vox.csv'],iouxxCal);
             %csvwrite(['./tmp/calman_',xx.f0,'_pix.csv'],iouxxCal2D);
             close all
+            
+            %im0 = regionMapWithData(res0.roiLst,xx.dAvg*0);
+            %fim0 = ['./tmp/',xx.f1,'_','caiman','_',xx.f0,'-',num2str(ii),'.tif'];
+            %imwrite(im0,fim0)
+            
+            if 1
+                r0 = res0.pixLst;
+                r0x = res0.evt;
+                m0 = zeros(size(xx.dAvg));
+                m0x = zeros(size(xx.dAvg));
+                for ee=1:numel(r0)
+                    m0(r0{ee}) = m0(r0{ee})+1;
+                    vox0 = r0x{ee};
+                    [ih0,iw0,~] = ind2sub(xx.sz,vox0);
+                    ihw0 = unique(sub2ind(size(xx.dAvg),ih0,iw0));
+                    m0x(ihw0) = m0x(ihw0)+1;
+                end
+                fim0 = ['./tmp/',xx.f1,'_','caiman','_',xx.f0,'-',num2str(ii),'.mat'];
+                roi0 = res0.roiLst;
+                save(fim0,'m0','m0x','roi0');
+            end
         end
     end
     

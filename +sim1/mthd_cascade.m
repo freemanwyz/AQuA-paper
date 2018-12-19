@@ -70,7 +70,6 @@ function mthd_cascade(xxLst)
             resx{ii,kk} = res0a;
             
             csvwrite(['./tmp/',xx.f1,'_','cascade','_',xx.f0,'_vox.csv'],iouxxCas);
-            %csvwrite(['./tmp/cascade_',xx.f0,'_pix.csv'],iouxxCas2D);
             close all
             
             %     % classfication with SVM
@@ -82,6 +81,27 @@ function mthd_cascade(xxLst)
             %         res0a.svm1_pk_class = lb0;
             %         resx{ii,jj} = res0a;
             %     end
+            
+            %im0r = regionMapWithData(res0.roi,xx.dAvg*0);
+            %fim0 = ['./tmp/',xx.f1,'_','cascade','_',xx.f0,'-',num2str(ii),'.tif'];
+            %imwrite(im0r,fim0)
+            
+            if 1
+                r0 = res0.pixLst;
+                r0x = res0.evt;
+                m0 = zeros(size(xx.dAvg));
+                m0x = zeros(size(xx.dAvg));
+                for ee=1:numel(r0)
+                    m0(r0{ee}) = m0(r0{ee})+1;
+                    vox0 = r0x{ee};
+                    [ih0,iw0,~] = ind2sub(xx.sz,vox0);
+                    ihw0 = unique(sub2ind(size(xx.dAvg),ih0,iw0));
+                    m0x(ihw0) = m0x(ihw0)+1;
+                end
+                fim0 = ['./tmp/',xx.f1,'_','cascade','_',xx.f0,'-',num2str(ii),'.mat'];
+                roi0 = res0.roi;
+                save(fim0,'m0','m0x','roi0');
+            end
         end
     end
     

@@ -1,11 +1,12 @@
 %% setup
 addpath(genpath('../../repo/aqua_20180705/'));
+pTop = getWorkPath();
 
 % -- preset 1: in vivo. 2: ex vivo. 3: GluSnFR
 preset = 1;
 % p0 = 'C:\Users\eric\OneDrive\projects\glia_kira\dbg\181113error\';
 % f0 = '181107_s3_003_noError.tif';
-p0 = 'D:\OneDrive\projects\glia_kira\se_aqua\dat\';
+p0 = [pTop,'/dat/'];
 f0 = '2826451(4)_1_2_4x_reg_200um_dualwv-001_nr.tif';
 % preset = 2;
 % p0 = 'D:\neuro_WORK\glia_kira\raw\TTXDataSetRegistered_32Bit\';
@@ -22,7 +23,7 @@ f0 = '2826451(4)_1_2_4x_reg_200um_dualwv-001_nr.tif';
 
 opts = util.parseParam(preset,0,'parameters1.csv');
 
-opts.spSz = 9;
+opts.spSz = 1;  % 9
 opts.smoCurve = 0.1;
 % opts.smoXY = 1;
 % opts.thrARScl = 2;

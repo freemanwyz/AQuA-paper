@@ -43,7 +43,7 @@ function [resx,iouVox] = mthd_aqua(xxLst,optsIn)
     kk=1; ii=1; %#ok<NASGU>
     for ii=1:numel(xx.nStdVec)
         fprintf('Aqua Std %d ==================\n',xx.nStdVec(ii));
-        parfor kk=1:nRep
+        for kk=1:nRep
             yy = xxLst{kk};
             datSimNy = yy.datSim + yy.dAvg*yy.bgRt + randn(yy.sz)*yy.nStdVec(ii)+0.2;            
             
@@ -67,6 +67,33 @@ function [resx,iouVox] = mthd_aqua(xxLst,optsIn)
         end
         csvwrite(['./tmp/',xx.f1,'_',mthdName,'_',xx.f0,'_vox.csv'],iouVox);
         %csvwrite(['./tmp/',mthdName,'_',xx.f0,'_pix.csv'],iouPix);
+        
+        if 1
+            for uu=1:2
+                if uu==1
+                    r0 = res0.pixLst;
+                    r0x = res0.evt;
+                else
+                    r0 = yy.pixLst;
+                    r0x = yy.evtLst;
+                end
+                m0 = zeros(size(xx.dAvg));
+                m0x = zeros(size(xx.dAvg));
+                for ee=1:numel(r0)
+                    m0(r0{ee}) = m0(r0{ee})+1;
+                    vox0 = r0x{ee};
+                    [ih0,iw0,~] = ind2sub(xx.sz,vox0);
+                    ihw0 = unique(sub2ind(size(xx.dAvg),ih0,iw0));
+                    m0x(ihw0) = m0x(ihw0)+1;
+                end
+                if uu==1
+                    fim0 = ['./tmp/',xx.f1,'_','aqua','_',xx.f0,'-',num2str(ii),'.mat'];
+                else
+                    fim0 = ['./tmp/',xx.f1,'_','gt','_',xx.f0,'-',num2str(ii),'.mat'];
+                end
+                save(fim0,'m0','m0x');
+            end
+        end
     end
     
     if xx.saveMe>0
