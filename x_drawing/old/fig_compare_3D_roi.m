@@ -172,7 +172,7 @@ for ii=1:numel(roi1)
 end
 
 %%
-addpath('../../toolbox/plots/altmany-export_fig/')
+addpath('../toolbox/plots/altmany-export_fig/')
 export_fig(fRoi,'fig1a_roi.png');
 export_fig(fRoi0,'fig1a_roi3d.png');
 export_fig(fRoi1,'fig1a_roi2event.png');

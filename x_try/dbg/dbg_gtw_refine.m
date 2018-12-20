@@ -1,5 +1,5 @@
 % how to refine refernece curves?
-addpath(genpath('../../repo/aqua/'));
+addpath(genpath('../AQuA/'));
 smoBase = 1;
 maxStp = 10;
 H = 100;

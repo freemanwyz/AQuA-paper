@@ -1,5 +1,5 @@
 %% setup
-addpath(genpath('../../repo/aqua_20180705/'));
+addpath(genpath('../AQuA-stable/'));
 pTop = getWorkPath();
 
 % -- preset 1: in vivo. 2: ex vivo. 3: GluSnFR

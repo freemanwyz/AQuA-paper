@@ -5,7 +5,7 @@ function mthd_cascade(xxLst)
     
     xx = xxLst{1};
     
-    addpath('../../repo/cascade/');
+    addpath('../cascade/');
     nRep = numel(xxLst);
     
     p = [];

@@ -4,7 +4,7 @@
 f0 = 'D:\OneDrive\projects\glia_kira\dbg\propagation_aqua_dly10.mat';
 load(f0)
 
-fp = '../../repo/aqua_20180705/';
+fp = '../AQuA-stable/';
 addpath(genpath(fp));
 
 %%

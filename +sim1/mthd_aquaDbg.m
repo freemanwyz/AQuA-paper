@@ -4,10 +4,10 @@ function mthd_aquaDbg(xx,vSel)
         vSel = 0;
     end
     if vSel==0
-        fp = '../../repo/aqua_20180705/';
+        fp = '../AQuA-stable/';
         mthdName = 'aqua-stable';
     else
-        fp = '../../repo/aqua/';
+        fp = '../repo/AQuA/';
         mthdName = 'aqua-dev';
     end
     addpath(genpath(fp));

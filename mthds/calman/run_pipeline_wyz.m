@@ -1,5 +1,5 @@
 %% complete pipeline for calcium imaging data pre-processing
-fCalmAn = '../../repo/CalmAn/';
+fCalmAn = '../CalmAn/';
 addpath(fCalmAn)
 addpath(genpath([fCalmAn,'utilities']));
 addpath(genpath([fCalmAn,'deconvolution']));

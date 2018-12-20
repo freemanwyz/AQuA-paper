@@ -1,5 +1,5 @@
 % C:\Users\Eric\Dropbox\code\repo\cascade
-addpath('../../repo/cascade/');
+addpath('../cascade/');
 
 [folderDat,fDat] = runCfg();
 % folderDat = 'D:\neuro_WORK\glia_kira\raw_proc\Mar14_Invivo\';

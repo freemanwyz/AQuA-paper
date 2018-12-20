@@ -4,8 +4,8 @@ function res = suite2p_wyz(dat,db)
     % intermediate things are written to temp folder
     %
     
-    addpath(genpath('..\..\repo\OASIS_matlab\'));
-    ops0.toolbox_path = '..\..\repo\Suite2P\';
+    addpath(genpath('../OASIS_matlab/'));
+    ops0.toolbox_path = '../Suite2P/';
     addpath(genpath(ops0.toolbox_path)) % add local path to the toolbox
     
     % folder structure, useless

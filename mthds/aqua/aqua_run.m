@@ -1,5 +1,5 @@
 %% setup
-addpath(genpath('../../repo/aqua/'));
+addpath(genpath('../AQuA/'));
 pOut = 'D:\OneDrive\projects\glia_kira\se_aqua\dat_detect\';
 p0 = 'D:\OneDrive\projects\glia_kira\se_aqua\dat\';
 

@@ -13,7 +13,7 @@ xx = xx{1};
 
 
 %%
-addpath(genpath('../../repo/aqua_20180705/'));
+addpath(genpath('../AQuA-stable/'));
 f0a = [xx.f0,'_tune_gtwsmo'];
 xVec = 1;
 iouxxAqua = zeros(numel(xx.nStdVec),numel(xVec));

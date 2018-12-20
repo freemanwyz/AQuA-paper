@@ -1,7 +1,7 @@
 function mthd_calman(xxLst)
     
     dlSave = './mthds/calman/';  % save CNN model
-    fCalmAn = '../../repo/CalmAn/';
+    fCalmAn = '../CalmAn/';
     addpath(fCalmAn)
     addpath(genpath([fCalmAn,'utilities']));
     addpath(genpath([fCalmAn,'deconvolution']));

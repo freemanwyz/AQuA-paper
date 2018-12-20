@@ -1,4 +1,4 @@
-addpath('../../toolbox/misc/');
+addpath('../toolbox/misc/');
 [folderDat,fDat] = runCfg();
 % folderDat = 'D:\neuro_WORK\glia_kira\raw_proc\Mar14_Invivo\';
 % fDat = '2826451(4)_1_2_4x_reg_200um_dualwv-001_nr';

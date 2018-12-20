@@ -1,5 +1,5 @@
 %% setup
-addpath(genpath('../../repo/aqua/'));
+addpath(genpath('../AQuA/'));
 
 preset = 2;
 p0 = 'D:\OneDrive\projects\glia_kira\raw\TTXDataSetRegistered_32Bit\';

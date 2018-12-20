@@ -1,5 +1,5 @@
 %% setup
-addpath(genpath('../../repo/aqua/'));
+addpath(genpath('../repo/AQuA/'));
 p0 = 'C:\Users\eric\OneDrive\projects\glia_kira\dbg\181113error\';
 % f0 = '181107_s3_003_noError.tif';
 f0 = '181107_s3_004_Error.tif';

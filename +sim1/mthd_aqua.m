@@ -1,7 +1,7 @@
 function [resx,iouVox] = mthd_aqua(xxLst,optsIn)
     
     mthdName = 'aqua-stable';
-    fp = '../../repo/aqua_20180705/';
+    fp = '../AQuA-stable/';
     addpath(genpath(fp));
         
     nRep = numel(xxLst);

@@ -1,6 +1,6 @@
 %% robust active region detection
 
-addpath(genpath('../../repo/aqua/'))
+addpath(genpath('../AQuA/'))
 
 % pIn = 'D:\OneDrive\projects\glia_kira\se_aqua\simDat\';
 % f0 = 'roi_dbg_tmpsmo_freqlow_201809281638';

@@ -24,7 +24,7 @@ zzshow(df0);
 myFile.close;
 
 %% gtw
-addpath(genpath('../../repo/aqua_20180705/'));
+addpath(genpath('../AQuA-stable/'));
 pTop = getWorkPath();
 opts = util.parseParam(1,0,'parameters1.csv');
 

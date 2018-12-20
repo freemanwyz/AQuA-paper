@@ -1,6 +1,6 @@
 % alignment with NoRMCorreS
 
-addpath(genpath('..\..\repo\NoRMCorre'));
+addpath(genpath('../NoRMCorre/'));
 
 % foldername = 'D:\neuro_WORK\glia_kira\raw_proc\Mar14_Invivo\';
 % f0 = {'2826451(4)_1_2_4x_reg_200um_dualwv-001_nr.tif'};

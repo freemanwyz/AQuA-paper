@@ -1,6 +1,6 @@
 function [resx,iouVox] = mthd_aqua_real(xxLst)
 
-    fp = '../../repo/aqua_20180705/';
+    fp = '../AQuA-stable/';
     mthdName = 'aqua-stable';
     addpath(genpath(fp));
     

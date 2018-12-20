@@ -17,7 +17,7 @@ io.writeTiffSeq([folderPrj,fDat,'_256_256_807.tif'],datx3n,16);
 %% post process
 H0 = 128;
 W0 = 128;
-addpath('../../toolbox/misc/');
+addpath('../toolbox/misc/');
 fRoi = 'RoiSet_128_128_807.zip';
 
 [H,W,T] = size(dat);

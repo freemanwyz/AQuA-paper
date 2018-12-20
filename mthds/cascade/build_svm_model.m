@@ -1,4 +1,4 @@
-addpath('../../repo/cascade/');
+addpath('../cascade/');
 
 pRes = 'D:\OneDrive\projects\glia_kira\results\sim_se_ex\';
 pDat = 'D:\OneDrive\projects\glia_kira\raw\TTXDataSetRegistered_32Bit\';

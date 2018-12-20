@@ -52,7 +52,7 @@ figure;plot(cx')
 %%
 % filter out noisy events by duration after detection (6 frames?)
 
-addpath(genpath('../../repo/aqua/'));
+addpath(genpath('../repo/AQuA/'));
 preset = 9;
 opts = util.parseParam(preset,0,'parameters1.csv');
 

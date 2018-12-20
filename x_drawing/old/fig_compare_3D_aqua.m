@@ -92,7 +92,7 @@ figure(fAquaCurve);
 axis off
 
 %% export
-addpath('../../toolbox/plots/altmany-export_fig/')
+addpath('../toolbox/plots/altmany-export_fig/')
 export_fig(fShow,'fig1a_raw.png');
 export_fig(fAqua,'fig1a_aqua.png');
 export_fig(fAquaCurve,'fig1a_aqua_curves.pdf');

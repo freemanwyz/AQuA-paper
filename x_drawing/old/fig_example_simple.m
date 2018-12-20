@@ -8,7 +8,7 @@
 %
 
 folderTop = 'D:\OneDrive\projects\glia_kira\se_aqua\';
-addpath(genpath('../../repo/aqua/'));
+addpath(genpath('../repo/AQuA/'));
 
 xType = 'overlap';
 % xType = 'prop1';
