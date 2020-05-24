@@ -12,6 +12,7 @@ oneFrame = imread(fName, 1);
 [nRow,nCol] = size(oneFrame);
 img = zeros(nRow, nCol, nFrames, 'single');
 for k = 1:nFrames
+    if mod(k,100)==0; fprintf('%d - %d\n',k,nFrames); end
     oneFrame = imread(fName, k);
     if rescaleImg
         img(:,:,k) = single(oneFrame)/maxVal;

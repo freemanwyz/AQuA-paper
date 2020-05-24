@@ -75,9 +75,14 @@ for nn=1:numel(simResFileLst)
     param0 = gtTb.param(gtSel);
     
     dt0 = load([simResFolder,sessTop,filesep,r0]);
+    
+%     nS = size(dt0.iouVol{1},2);
+    nS = 1;  % 1 for paper
+    scl = 1;  % 2 for paper
+    
     snr0 = round(20*log10(gt0{1}.sigMean./dt0.nStdVec)*10)/10;
-    ivox = [mean(dt0.iouVol{1},2),2*std(dt0.iouVol{1},0,2)];
-    ipix = [mean(dt0.iouVol{2},2),2*std(dt0.iouVol{2},0,2)];
+    ivox = [mean(dt0.iouVol{1},2),scl*std(dt0.iouVol{1}/sqrt(nS),0,2)];
+    ipix = [mean(dt0.iouVol{2},2),scl*std(dt0.iouVol{2}/sqrt(nS),0,2)];
     
     lst0 = cell(numel(snr0),1);
     for ii=1:numel(snr0)
@@ -101,7 +106,9 @@ for nn=1:numel(xLst)
     end
 end
 
-writetable(dtTb,[outcomeFolder,filesep,sessTop,'_summary.csv']);
+% writetable(dtTb,[outcomeFolder,filesep,sessTop,'_summary_paper.csv']);
+% writetable(dtTb,[outcomeFolder,filesep,sessTop,'_summary_2se.csv']);
+writetable(dtTb,[outcomeFolder,filesep,sessTop,'_summary_sd.csv']);
 
 
 

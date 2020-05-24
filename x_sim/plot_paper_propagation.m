@@ -4,7 +4,8 @@
 sessTop = 'event_20181023';
 mthdNameLst = {'aqua-stable','geci','cascade','calman','suite2p'};
 simResFolder = getWorkPath('outcome');
-dtTb = readtable([simResFolder,filesep,sessTop,'_summary_paper.csv']);
+% dtTb = readtable([simResFolder,filesep,sessTop,'_summary_paper.csv']);
+dtTb = readtable([simResFolder,'/',sessTop,'_summary_2se.csv']);
 
 
 %% grow type propagation -- fixed speed -- variable SNR
