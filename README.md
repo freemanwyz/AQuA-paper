@@ -18,6 +18,19 @@ Use `./x_sim/gen_paper_propagation.m` to generate synthetic data with *propagati
 The events used in the synthetic data are from thresholding the delta F signal of real data.
 
 ## Run simulation
+You need to download the following repositories if you want to test algorithms:
+- AQuA: https://github.com/freemanwyz/AQuA-stable-v1 
+- CaImAn: https://github.com/freemanwyz/CaImAn-MATLAB
+- CaSCaDe: https://github.com/freemanwyz/CaSCaDe
+- Suite2P: https://github.com/freemanwyz/Suite2P
+
+The following repository might also be used:
+- https://github.com/freemanwyz/OASIS_matlab
+
+There is no need to download GECIQuant since it is already included in this repository.
+
+After download, put all repositories (including this one) to the same folder (`./mthds/geciquant/`). The `./mthds` folder also incldue the helper functions for other methods.
+
 To run the simulation, see `./x_sim/sim_paper.m`.
 
 ## Spatial map
