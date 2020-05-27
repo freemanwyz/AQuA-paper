@@ -6,8 +6,7 @@ This repository contains the code for making synthetic data, running simulation 
 It contains wrappers for Suite2P, CaImAn, CaSCaDe and GECI-quant. The scripts for GECI-quant is modified to automate the simulation.
 
 ## Getting started
-Download all AQuA related data from https://drive.google.com/file/d/1uJ3G3Foh8nzNJPoEXr43dbkM4B7AuaNS/view?usp=sharing.
-The file to download is large (~190 GB), and most files are not used in the simulation. I may extract the necessary subset later to reduce the size of file.
+Download all AQuA related data. The file to download is large (~190 GB), and most files are not used in the simulation. I may extract the necessary subset later to reduce the size of file.
 
 1. After download, extract the `iso` file.
 2. Open `./util/getWorkPath.m`, add the path containing `glia_kira` to list `topPathLst`.
